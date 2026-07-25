@@ -9,20 +9,21 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            AdminSeeder::class,              // your existing admin user
+            AdminSeeder::class,
 
-            AgentSeeder::class,               // agents (+ their user accounts)
-            AgentAvailabilitySeeder::class,   // depends on agents
+            AgentSeeder::class,
+            AgentAvailabilitySeeder::class,
 
-            ClientSeeder::class,              // depends on agents
-            ClientPreferenceSeeder::class,    // depends on clients
+            ClientSeeder::class,
+            ClientPreferenceSeeder::class,
 
-            PropertySeeder::class,            // depends on agents
-            PropertyPhotoSeeder::class,       // depends on properties
+            PropertySeeder::class,
+            PropertyPhotoSeeder::class,
 
-            AppointmentSeeder::class,         // depends on agents, clients, properties
-            SearchSeeder::class,              // depends on agents, clients
-            SavedSearchSeeder::class,         // depends on clients
+            AppointmentSeeder::class,
+            NotificationSeeder::class,
+            SearchSeeder::class,
+            SavedSearchSeeder::class,
         ]);
     }
 }
