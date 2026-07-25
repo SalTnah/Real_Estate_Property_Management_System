@@ -3,6 +3,7 @@
     $currentType = request('type');
     $currentBeds = request('beds', 'Any');
     $bedOptions = ['Any', '1+', '2+', '3+', '4+'];
+    $routePrefix = $routePrefix ?? 'agent';
 @endphp
 
 <x-agent-layout :title="'Filter & Sort'">
@@ -11,7 +12,7 @@
         <p class="mt-1 text-sm text-gray-500">Refine your property list.</p>
     </div>
 
-    <form method="GET" action="{{ route('properties.index') }}" class="mt-6 max-w-xl rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+    <form method="GET" action="{{ route($routePrefix.'.properties.index') }}" class="mt-6 max-w-xl rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
         <div>
             <x-input-label for="sort" value="Sort by" />
             <select id="sort" name="sort" class="block w-full rounded-lg border-gray-300 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500">
@@ -87,7 +88,7 @@
             <button type="submit" class="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
                 Apply Filters
             </button>
-            <a href="{{ route('properties.index') }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">Reset</a>
+            <a href="{{ route($routePrefix.'.properties.index') }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">Reset</a>
         </div>
     </form>
 </x-agent-layout>

@@ -65,7 +65,7 @@
                                 @foreach ($agent->clients as $client)
                                     <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                         <td class="px-5 py-3">
-                                            <a href="{{ route('clients.show', $client) }}" class="font-medium text-gray-900 hover:text-blue-600">
+                                            <a href="{{ route('admin.clients.show', $client) }}" class="font-medium text-gray-900 hover:text-blue-600">
                                                 {{ $client->f_name }} {{ $client->l_name }}
                                             </a>
                                         </td>
@@ -99,7 +99,7 @@
                                 @foreach ($agent->properties as $property)
                                     <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                         <td class="px-5 py-3">
-                                            <a href="{{ route('properties.show', $property) }}" class="font-medium text-gray-900 hover:text-blue-600">
+                                            <a href="{{ route('admin.properties.show', $property) }}" class="font-medium text-gray-900 hover:text-blue-600">
                                                 {{ $property->title }}
                                             </a>
                                         </td>

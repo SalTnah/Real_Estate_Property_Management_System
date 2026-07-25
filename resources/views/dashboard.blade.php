@@ -2,6 +2,7 @@
     $hour = now()->hour;
     $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
     $firstName = $agent->f_name ?? auth()->user()->name;
+    $rp = auth()->user()->isAdmin() ? 'admin' : 'agent';
 @endphp
 
 <x-agent-layout :title="'Dashboard'">
@@ -10,7 +11,7 @@
             <h1 class="text-2xl font-bold text-gray-900">{{ $greeting }}, {{ $firstName }}</h1>
             <p class="mt-1 text-sm text-gray-500">Here's what's happening across your portfolio today.</p>
         </div>
-        <a href="{{ route('properties.create') }}" class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+        <a href="{{ route($rp.'.properties.create') }}" class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
             Add Property
         </a>
     </div>
@@ -53,7 +54,7 @@
         <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-100 lg:col-span-2">
             <div class="flex items-center justify-between px-5 py-4">
                 <h2 class="text-base font-semibold text-gray-900">Recent Listings</h2>
-                <a href="{{ route('properties.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700">View all &rarr;</a>
+                <a href="{{ route($rp.'.properties.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700">View all &rarr;</a>
             </div>
 
             @if ($recentProperties->isEmpty())
@@ -73,7 +74,7 @@
                             @foreach ($recentProperties as $property)
                                 <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                     <td class="px-5 py-3">
-                                        <a href="{{ route('properties.show', $property) }}" class="font-medium text-gray-900 hover:text-blue-600">
+                                        <a href="{{ route($rp.'.properties.show', $property) }}" class="font-medium text-gray-900 hover:text-blue-600">
                                             {{ $property->title }}
                                         </a>
                                     </td>

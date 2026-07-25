@@ -1,5 +1,7 @@
 @php
     $agent = auth()->user()?->agent;
+    $isAdmin = auth()->user()?->isAdmin() ?? false;
+    $settingsRoute = $isAdmin ? 'admin.settings.edit' : 'agent.profile.edit';
     $initials = $agent
         ? strtoupper(substr($agent->f_name, 0, 1) . substr($agent->l_name, 0, 1))
         : strtoupper(substr(auth()->user()->name ?? 'A', 0, 2));
@@ -44,7 +46,7 @@
                 <p class="truncate text-sm font-medium text-gray-900">{{ $agent ? $agent->f_name.' '.$agent->l_name : auth()->user()->name }}</p>
                 <p class="truncate text-xs text-gray-500">{{ auth()->user()->email }}</p>
             </div>
-            <a href="{{ route('agent.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Settings</a>
+            <a href="{{ route($settingsRoute) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Settings</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Log out</button>

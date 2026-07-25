@@ -1,5 +1,6 @@
 @php
     $property = $property ?? null;
+    $routePrefix = $routePrefix ?? 'agent';
 @endphp
 
 <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
@@ -21,7 +22,7 @@
                 </div>
             @endforeach
         </div>
-        <a href="{{ route('properties.photos.index', $property) }}" class="mt-3 block text-center text-sm font-medium text-blue-600 hover:text-blue-700">
+        <a href="{{ route($routePrefix.'.properties.photos.index', $property) }}" class="mt-3 block text-center text-sm font-medium text-blue-600 hover:text-blue-700">
             Manage photos
         </a>
     @endif

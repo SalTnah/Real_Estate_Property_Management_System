@@ -1,52 +1,28 @@
 <?php
 
-use App\Http\Controllers\AgentController;
+use App\Http\Controllers\Admin\AgentController as AdminAgentController;
+use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\PropertyController as AdminPropertyController;
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
+use App\Http\Controllers\Agent\ClientController as AgentClientController;
+use App\Http\Controllers\Agent\ProfileController as AgentProfileController;
+use App\Http\Controllers\Agent\PropertyController as AgentPropertyController;
 use App\Http\Controllers\AgentAvailabilityController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\SearchController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SavedSearchController;
-use App\Http\Controllers\AdminAgentController;
-use App\Http\Controllers\AdminClientController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Public / Auth routes
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store']);
-
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
-
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
-
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
-    Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
-});
-
-Route::middleware('auth')->group(function () {
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-});
+require __DIR__.'/auth.php';
 
 /*
 |--------------------------------------------------------------------------
-| Agent-facing routes (logged-in agent only)
+| Shared authenticated routes (single-role features, no role branching)
 |--------------------------------------------------------------------------
 */
 
@@ -54,31 +30,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Agent's own profile (singular resource — no index/create/destroy)
-    Route::get('/profile', [AgentController::class, 'show'])->name('agent.show');
-    Route::get('/profile/edit', [AgentController::class, 'edit'])->name('agent.edit');
-    Route::put('/profile', [AgentController::class, 'update'])->name('agent.update');
-
     // Agent availability
     Route::get('/availability', [AgentAvailabilityController::class, 'index'])->name('availability.index');
     Route::post('/availability', [AgentAvailabilityController::class, 'store'])->name('availability.store');
     Route::put('/availability/{agentAvailability}', [AgentAvailabilityController::class, 'update'])->name('availability.update');
     Route::delete('/availability/{agentAvailability}', [AgentAvailabilityController::class, 'destroy'])->name('availability.destroy');
-
-    // Clients
-    Route::resource('clients', ClientController::class);
-
-    // Properties
-    Route::get('/properties/filter', [PropertyController::class, 'filter'])->name('properties.filter');
-    Route::resource('properties', PropertyController::class);
-    Route::patch('/properties/{property}/favorite', [PropertyController::class, 'toggleFavorite'])->name('properties.favorite');
-    Route::patch('/properties/{property}/status', [PropertyController::class, 'updateStatus'])->name('properties.status');
-
-    Route::get('/properties/{property}/photos', [PropertyController::class, 'photosIndex'])->name('properties.photos.index');
-    Route::post('/properties/{property}/photos', [PropertyController::class, 'storePhotos'])->name('properties.photos.store');
-    Route::patch('/properties/{property}/photos/reorder', [PropertyController::class, 'reorderPhotos'])->name('properties.photos.reorder');
-    Route::patch('/properties/{property}/photos/{photoId}/primary', [PropertyController::class, 'setPrimaryPhoto'])->name('properties.photos.primary');
-    Route::delete('/properties/{property}/photos/{photoId}', [PropertyController::class, 'destroyPhoto'])->name('properties.photos.destroy');
 
     // Appointments
     Route::resource('appointments', AppointmentController::class);
@@ -98,11 +54,62 @@ Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin-facing routes (admin only)
+| Agent-facing routes (role-segmented — Agent\* controllers)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'agent'])->name('agent.')->group(function () {
+
+    // Agent's own profile (singular resource — no index/create/destroy)
+    Route::get('/profile', [AgentProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [AgentProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [AgentProfileController::class, 'update'])->name('profile.update');
+
+    // Properties (agent-owned only — AgentPropertyController scopes to auth()->user()->agent)
+    Route::get('/properties/filter', [AgentPropertyController::class, 'filter'])->name('properties.filter');
+    Route::resource('properties', AgentPropertyController::class);
+    Route::patch('/properties/{property}/favorite', [AgentPropertyController::class, 'toggleFavorite'])->name('properties.favorite');
+    Route::patch('/properties/{property}/status', [AgentPropertyController::class, 'updateStatus'])->name('properties.status');
+
+    Route::get('/properties/{property}/photos', [AgentPropertyController::class, 'photosIndex'])->name('properties.photos.index');
+    Route::post('/properties/{property}/photos', [AgentPropertyController::class, 'storePhotos'])->name('properties.photos.store');
+    Route::patch('/properties/{property}/photos/reorder', [AgentPropertyController::class, 'reorderPhotos'])->name('properties.photos.reorder');
+    Route::patch('/properties/{property}/photos/{photoId}/primary', [AgentPropertyController::class, 'setPrimaryPhoto'])->name('properties.photos.primary');
+    Route::delete('/properties/{property}/photos/{photoId}', [AgentPropertyController::class, 'destroyPhoto'])->name('properties.photos.destroy');
+
+    // Clients (agent's own book of business)
+    Route::resource('clients', AgentClientController::class);
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin-facing routes (role-segmented — Admin\* controllers)
 |--------------------------------------------------------------------------
 */
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Agent account management (unchanged — already correctly namespaced)
     Route::resource('agents', AdminAgentController::class);
+
+    // Admin's own account settings (name/email/password on the User model)
+    Route::get('/settings', [AdminSettingsController::class, 'edit'])->name('settings.edit');
+    Route::put('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+
+    // Properties (global — AdminPropertyController scopes from Property::query() directly)
+    // No favorite-toggle for admin: it's a personal agent bookmark, not an oversight feature.
+    Route::get('/properties/filter', [AdminPropertyController::class, 'filter'])->name('properties.filter');
+    Route::resource('properties', AdminPropertyController::class);
+    Route::patch('/properties/{property}/status', [AdminPropertyController::class, 'updateStatus'])->name('properties.status');
+
+    Route::get('/properties/{property}/photos', [AdminPropertyController::class, 'photosIndex'])->name('properties.photos.index');
+    Route::post('/properties/{property}/photos', [AdminPropertyController::class, 'storePhotos'])->name('properties.photos.store');
+    Route::patch('/properties/{property}/photos/reorder', [AdminPropertyController::class, 'reorderPhotos'])->name('properties.photos.reorder');
+    Route::patch('/properties/{property}/photos/{photoId}/primary', [AdminPropertyController::class, 'setPrimaryPhoto'])->name('properties.photos.primary');
+    Route::delete('/properties/{property}/photos/{photoId}', [AdminPropertyController::class, 'destroyPhoto'])->name('properties.photos.destroy');
+
+    // Clients (global, read-only — AdminClientController scopes from Client::query() directly)
     Route::resource('clients', AdminClientController::class)->only(['index', 'show']);
+
 });
