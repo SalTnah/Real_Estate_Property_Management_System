@@ -3,19 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = auth()->user()->agent->notifications()->latest()->get();
+        $user = auth()->user();
+
+        if ($user->agent) {
+            $notifications = $user->agent->notifications()->latest()->get();
+        } else {
+            $notifications = Notification::latest()->get();
+        }
 
         return view('notifications.index', compact('notifications'));
     }
 
     public function markRead(Notification $notification)
     {
-        abort_unless($notification->agent_id === auth()->user()->agent->id, 403);
+        $user = auth()->user();
+
+        if ($user->agent) {
+            abort_unless($notification->agent_id === $user->agent->id, 403);
+        }
 
         $notification->markAsRead();
 
@@ -24,14 +35,24 @@ class NotificationController extends Controller
 
     public function markAllRead()
     {
-        auth()->user()->agent->notifications()->unread()->update(['read_at' => now()]);
+        $user = auth()->user();
+
+        if ($user->agent) {
+            $user->agent->notifications()->unread()->update(['read_at' => now()]);
+        } else {
+            Notification::unread()->update(['read_at' => now()]);
+        }
 
         return redirect()->back();
     }
 
     public function destroy(Notification $notification)
     {
-        abort_unless($notification->agent_id === auth()->user()->agent->id, 403);
+        $user = auth()->user();
+
+        if ($user->agent) {
+            abort_unless($notification->agent_id === $user->agent->id, 403);
+        }
 
         $notification->delete();
 

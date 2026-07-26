@@ -2,25 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agent;
 use Illuminate\Http\Request;
 
 class AgentController extends Controller
 {
     public function show()
     {
-        $agent = auth()->user()->agent;
+        $user = auth()->user();
+        
+        $agent = $user->agent ?? Agent::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'f_name' => $user->name,
+                'l_name' => '',
+                'email' => $user->email,
+            ]
+        );
+
         return view('agent.show', compact('agent'));
     }
 
     public function edit()
     {
-        $agent = auth()->user()->agent;
+        $user = auth()->user();
+        
+        $agent = $user->agent ?? Agent::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'f_name' => $user->name,
+                'l_name' => '',
+                'email' => $user->email,
+            ]
+        );
+
         return view('agent.edit', compact('agent'));
     }
 
     public function update(Request $request)
     {
-        $agent = auth()->user()->agent;
+        $user = auth()->user();
+        
+        $agent = $user->agent ?? Agent::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'f_name' => $user->name,
+                'l_name' => '',
+                'email' => $user->email,
+            ]
+        );
 
         $validated = $request->validate([
             'f_name' => 'required|string|max:255',

@@ -7,9 +7,20 @@ use App\Models\User;
 
 class AppointmentPolicy
 {
+
+    public function before(User $user, string $ability): ?bool
+    {
+
+        if ($user->is_admin || $user->role === 'admin') {
+            return true;
+        }
+
+        return null;
+    }
+
     public function viewAny(User $user)
     {
-        return $user->agent !== null; // admin has no appointment access per current scope
+        return $user->agent !== null;
     }
 
     public function view(User $user, Appointment $appointment)

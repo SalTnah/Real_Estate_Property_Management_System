@@ -20,11 +20,18 @@ class CalendarController extends Controller
         $gridStart = $month->copy()->startOfMonth()->startOfWeek(Carbon::SUNDAY);
         $gridEnd = $month->copy()->endOfMonth()->endOfWeek(Carbon::SATURDAY);
 
-        $appointments = auth()->user()->agent->appointments()
-            ->with('client', 'property')
-            ->whereBetween('start_time', [$gridStart, $gridEnd])
-            ->orderBy('start_time')
-            ->get();
+        $user = auth()->user();
+
+        $query = Appointment::with('client', 'property', 'agent')
+            ->whereBetween('start_time', [$gridStart, $gridEnd]);
+
+        $isAdmin = ($user->is_admin ?? false) || ($user->role === 'admin');
+
+        if (!$isAdmin && $user->agent) {
+            $query->where('agent_id', $user->agent->id);
+        }
+
+        $appointments = $query->orderBy('start_time')->get();
 
         $byDay = $appointments->groupBy(fn ($appt) => $appt->start_time->format('Y-m-d'));
 

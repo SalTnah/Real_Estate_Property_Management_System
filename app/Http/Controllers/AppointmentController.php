@@ -11,7 +11,16 @@ class AppointmentController extends Controller
     {
         $this->authorize('viewAny', Appointment::class);
 
-        $appointments = auth()->user()->agent->appointments()->with('client', 'property')->get();
+        $user = auth()->user();
+        $query = Appointment::with('client', 'property', 'agent');
+
+        $isAdmin = ($user->is_admin ?? false) || ($user->role === 'admin');
+
+        if (!$isAdmin && $user->agent) {
+            $query->where('agent_id', $user->agent->id);
+        }
+
+        $appointments = $query->orderBy('start_time')->get();
 
         return view('appointments.index', compact('appointments'));
     }
@@ -27,7 +36,10 @@ class AppointmentController extends Controller
     {
         $this->authorize('create', Appointment::class);
 
-        $validated = $request->validate([
+        $user = auth()->user();
+        $isAdmin = ($user->is_admin ?? false) || ($user->role === 'admin');
+
+        $rules = [
             'property_id' => 'nullable|exists:properties,id',
             'client_id' => 'nullable|exists:clients,id',
             'title' => 'required|string|max:255',
@@ -36,9 +48,19 @@ class AppointmentController extends Controller
             'end_time' => 'required|date|after:start_time',
             'status' => 'nullable|in:Scheduled,Completed,Cancelled,No-show',
             'notes' => 'nullable|string',
-        ]);
+        ];
 
-        $appointment = auth()->user()->agent->appointments()->create($validated);
+        if ($isAdmin) {
+            $rules['agent_id'] = 'required|exists:agents,id';
+        }
+
+        $validated = $request->validate($rules);
+
+        if (!$isAdmin && $user->agent) {
+            $validated['agent_id'] = $user->agent->id;
+        }
+
+        $appointment = Appointment::create($validated);
 
         return redirect()->route('agent.appointments.show', $appointment)->with('success', 'Appointment scheduled.');
     }
@@ -75,7 +97,7 @@ class AppointmentController extends Controller
 
         $appointment->update($validated);
 
-        return redirect()->route('appointments.show', $appointment)->with('success', 'Appointment updated.');
+        return redirect()->route('agent.appointments.show', $appointment)->with('success', 'Appointment updated.');
     }
 
     public function destroy(Appointment $appointment)
@@ -84,6 +106,6 @@ class AppointmentController extends Controller
 
         $appointment->delete();
 
-        return redirect()->route('appointments.index')->with('success', 'Appointment cancelled.');
+        return redirect()->route('agent.appointments.index')->with('success', 'Appointment cancelled.');
     }
 }
