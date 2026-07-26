@@ -6,12 +6,10 @@
         ? strtoupper(substr($agent->f_name, 0, 1) . substr($agent->l_name, 0, 1))
         : strtoupper(substr(auth()->user()->name ?? 'A', 0, 2));
 @endphp
-
 <header class="flex h-16 shrink-0 items-center gap-4 border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8">
     <button @click="sidebarOpen = true" class="text-gray-500 hover:text-gray-700 lg:hidden">
         <x-agent.icon name="menu" class="h-6 w-6" />
     </button>
-
     <div class="min-w-0 flex-1">
         <div class="relative max-w-md">
             <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -24,14 +22,12 @@
             >
         </div>
     </div>
-
-    <button class="relative text-gray-400 hover:text-gray-600">
+    <a href="{{ route('notifications.index') }}" class="relative text-gray-400 hover:text-gray-600">
         <x-agent.icon name="bell" class="h-6 w-6" />
         @if(($unreadNotifications ?? 0) > 0)
             <span class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500"></span>
         @endif
-    </button>
-
+    </a>
     <div x-data="{ open: false }" class="relative">
         <button @click="open = !open" @click.outside="open = false" class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
             {{ $initials }}

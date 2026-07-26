@@ -9,7 +9,9 @@ use App\Http\Controllers\Agent\ProfileController as AgentProfileController;
 use App\Http\Controllers\Agent\PropertyController as AgentPropertyController;
 use App\Http\Controllers\AgentAvailabilityController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SavedSearchController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +40,15 @@ Route::middleware(['auth'])->group(function () {
 
     // Appointments
     Route::resource('appointments', AppointmentController::class);
+
+    // Calendar
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // Search
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');

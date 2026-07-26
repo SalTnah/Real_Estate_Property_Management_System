@@ -61,6 +61,22 @@
             </li>
         </ul>
 
+        <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Scheduling</p>
+        <ul class="space-y-1">
+            @foreach ([
+                $navItem('Calendar', 'calendar.index', 'calendar', ['calendar.*']),
+                $navItem('Appointments', 'appointments.index', 'clock', ['appointments.*']),
+                $navItem('Availability', 'availability.index', 'check-square', ['availability.*']),
+            ] as $item)
+                <li>
+                    <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
+                        <x-agent.icon :name="$item['icon']" class="h-5 w-5 shrink-0" />
+                        {{ $item['label'] }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+
         @if ($isAdmin)
             <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Admin</p>
             <ul class="space-y-1">
