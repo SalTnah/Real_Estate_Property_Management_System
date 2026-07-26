@@ -20,10 +20,18 @@ return new class extends Migration
 
             $table->index(['agent_id', 'read_at']);
         });
+
+        Schema::table('notifications', function (Blueprint $table) {
+            $table->foreignId('agent_id')->nullable()->change();
+        });
     }
 
     public function down(): void
     {
         Schema::dropIfExists('notifications');
+        
+        Schema::table('notifications', function (Blueprint $table) {
+            $table->foreignId('agent_id')->nullable(false)->change();
+        });
     }
 };

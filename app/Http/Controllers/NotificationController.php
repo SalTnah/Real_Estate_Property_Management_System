@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
-use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
@@ -11,11 +10,9 @@ class NotificationController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->agent) {
-            $notifications = $user->agent->notifications()->latest()->get();
-        } else {
-            $notifications = Notification::latest()->get();
-        }
+        $notifications = $user->agent
+            ? $user->agent->notifications()->latest()->get()
+            : Notification::forAdmins()->latest()->get();
 
         return view('notifications.index', compact('notifications'));
     }
@@ -26,6 +23,8 @@ class NotificationController extends Controller
 
         if ($user->agent) {
             abort_unless($notification->agent_id === $user->agent->id, 403);
+        } else {
+            abort_unless(is_null($notification->agent_id), 403);
         }
 
         $notification->markAsRead();
@@ -40,7 +39,7 @@ class NotificationController extends Controller
         if ($user->agent) {
             $user->agent->notifications()->unread()->update(['read_at' => now()]);
         } else {
-            Notification::unread()->update(['read_at' => now()]);
+            Notification::forAdmins()->unread()->update(['read_at' => now()]);
         }
 
         return redirect()->back();
@@ -52,6 +51,8 @@ class NotificationController extends Controller
 
         if ($user->agent) {
             abort_unless($notification->agent_id === $user->agent->id, 403);
+        } else {
+            abort_unless(is_null($notification->agent_id), 403);
         }
 
         $notification->delete();

@@ -24,6 +24,11 @@ class Notification extends Model
         return $query->whereNull('read_at');
     }
 
+    public function scopeForAdmins($query)
+    {
+        return $query->whereNull('agent_id');
+    }
+    
     public function markAsRead()
     {
         if (is_null($this->read_at)) {
