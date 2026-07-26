@@ -38,8 +38,8 @@
         <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Properties</p>
         <ul class="space-y-1">
             @foreach ([
-                $navItem('Properties', 'properties.index', 'building', ['properties.index', 'properties.show', 'properties.edit', 'properties.filter', 'properties.photos.*']),
-                $navItem('Add Property', 'properties.create', 'plus'),
+                $navItem('Properties', 'agent.properties.index', 'building', ['agent.properties.index', 'agent.properties.show', 'agent.properties.edit', 'agent.properties.filter', 'agent.properties.photos.*']),
+                $navItem('Add Property', 'agent.properties.create', 'plus'),
             ] as $item)
                 <li>
                     <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
@@ -52,7 +52,7 @@
 
         <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">People</p>
         <ul class="space-y-1">
-            @php($item = $navItem('Clients', 'clients.index', 'users'))
+            @php($item = $navItem('Clients', 'agent.clients.index', 'users'))
             <li>
                 <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
                     <x-agent.icon :name="$item['icon']" class="h-5 w-5 shrink-0" />
@@ -92,8 +92,8 @@
         <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Scheduling</p>
         <ul class="space-y-1">
             @foreach ([
-                $navItem('Calendar', 'appointments.index', 'calendar'),
-                $navItem('Appointments', 'appointments.index', 'clock'),
+                $navItem('Calendar', 'agent.appointments.calendar', 'calendar'),
+                $navItem('Appointments', 'agent.appointments.index', 'clock'),
                 ...(! $isAdmin ? [$navItem('Availability', 'availability.index', 'check-square')] : []),
             ] as $item)
                 <li>

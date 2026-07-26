@@ -15,7 +15,7 @@
         </div>
 
         @can('create', \App\Models\Appointment::class)
-            <a href="{{ route('appointments.create') }}" class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+            <a href="{{ route('agent.appointments.create') }}" class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
                 Schedule Appointment
             </a>
         @endcan
@@ -41,7 +41,7 @@
                         @foreach ($appointments->sortBy('start_time') as $appointment)
                             <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                 <td class="px-5 py-3">
-                                    <a href="{{ route('appointments.show', $appointment) }}" class="font-medium text-gray-900 hover:text-blue-600">
+                                    <a href="{{ route('agent.appointments.show', $appointment) }}" class="font-medium text-gray-900 hover:text-blue-600">
                                         {{ $appointment->title }}
                                     </a>
                                 </td>

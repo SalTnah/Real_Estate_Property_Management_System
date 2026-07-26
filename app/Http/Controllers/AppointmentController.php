@@ -40,7 +40,7 @@ class AppointmentController extends Controller
 
         $appointment = auth()->user()->agent->appointments()->create($validated);
 
-        return redirect()->route('appointments.show', $appointment)->with('success', 'Appointment scheduled.');
+        return redirect()->route('agent.appointments.show', $appointment)->with('success', 'Appointment scheduled.');
     }
 
     public function show(Appointment $appointment)

@@ -16,6 +16,9 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CalendarController;
+
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,20 +67,22 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/availability/{agentAvailability}', [AgentAvailabilityController::class, 'update'])->name('availability.update');
     Route::delete('/availability/{agentAvailability}', [AgentAvailabilityController::class, 'destroy'])->name('availability.destroy');
 
-    Route::resource('clients', ClientController::class);
+    Route::resource('clients', ClientController::class)->names('agent.clients');
 
-    Route::get('/properties/filter', [PropertyController::class, 'filter'])->name('properties.filter');
-    Route::resource('properties', PropertyController::class);
-    Route::patch('/properties/{property}/favorite', [PropertyController::class, 'toggleFavorite'])->name('properties.favorite');
-    Route::patch('/properties/{property}/status', [PropertyController::class, 'updateStatus'])->name('properties.status');
+    Route::get('/properties/filter', [PropertyController::class, 'filter'])->name('agent.properties.filter');
+    Route::resource('properties', PropertyController::class)->names('agent.properties');
+    Route::patch('/properties/{property}/favorite', [PropertyController::class, 'toggleFavorite'])->name('agent.properties.favorite');
+    Route::patch('/properties/{property}/status', [PropertyController::class, 'updateStatus'])->name('agent.properties.status');
 
-    Route::get('/properties/{property}/photos', [PropertyController::class, 'photosIndex'])->name('properties.photos.index');
-    Route::post('/properties/{property}/photos', [PropertyController::class, 'storePhotos'])->name('properties.photos.store');
-    Route::patch('/properties/{property}/photos/reorder', [PropertyController::class, 'reorderPhotos'])->name('properties.photos.reorder');
-    Route::patch('/properties/{property}/photos/{photoId}/primary', [PropertyController::class, 'setPrimaryPhoto'])->name('properties.photos.primary');
-    Route::delete('/properties/{property}/photos/{photoId}', [PropertyController::class, 'destroyPhoto'])->name('properties.photos.destroy');
+    Route::get('/properties/{property}/photos', [PropertyController::class, 'photosIndex'])->name('agent.properties.photos.index');
+    Route::post('/properties/{property}/photos', [PropertyController::class, 'storePhotos'])->name('agent.properties.photos.store');
+    Route::patch('/properties/{property}/photos/reorder', [PropertyController::class, 'reorderPhotos'])->name('agent.properties.photos.reorder');
+    Route::patch('/properties/{property}/photos/{photoId}/primary', [PropertyController::class, 'setPrimaryPhoto'])->name('agent.properties.photos.primary');
+    Route::delete('/properties/{property}/photos/{photoId}', [PropertyController::class, 'destroyPhoto'])->name('agent.properties.photos.destroy');
 
-    Route::resource('appointments', AppointmentController::class);
+    Route::get('/appointments/calendar', [CalendarController::class, 'index'])->name('agent.appointments.calendar');
+
+    Route::resource('appointments', AppointmentController::class)->names('agent.appointments');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
@@ -104,4 +109,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('agents', AdminAgentController::class);
     Route::resource('clients', AdminClientController::class)->only(['index', 'show']);
+    Route::resource('properties', PropertyController::class);
+
+    // Add these lines for the Settings page
+    Route::get('settings', [AdminSettingsController::class, 'edit'])->name('settings.edit');
+    Route::put('settings', [AdminSettingsController::class, 'update'])->name('settings.update');
 });

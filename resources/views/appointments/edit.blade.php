@@ -4,7 +4,7 @@
         <p class="mt-1 text-sm text-gray-500">Update details for {{ $appointment->title }}.</p>
     </div>
 
-    <form method="POST" action="{{ route('appointments.update', $appointment) }}" class="mt-6 max-w-3xl rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+    <form method="POST" action="{{ route('agent.appointments.update', $appointment) }}" class="mt-6 max-w-3xl rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
         @csrf
         @method('PUT')
         @include('appointments._form')
@@ -13,7 +13,7 @@
             <button type="submit" class="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
                 Save Changes
             </button>
-            <a href="{{ route('appointments.show', $appointment) }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">Cancel</a>
+            <a href="{{ route('agent.appointments.show', $appointment) }}" class="text-sm font-medium text-gray-500 hover:text-gray-700">Cancel</a>
         </div>
     </form>
 </x-agent-layout>

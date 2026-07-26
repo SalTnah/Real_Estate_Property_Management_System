@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Property extends Model
 {
+    use HasFactory;
+    
     protected $fillable = [
         'agent_id', 'title', 'description', 'property_type', 'status',
         'street_address', 'city', 'state', 'zip', 'latitude', 'longitude',

@@ -1,7 +1,7 @@
 @php
     $agent = auth()->user()?->agent;
     $isAdmin = auth()->user()?->isAdmin() ?? false;
-    $settingsRoute = $isAdmin ? 'admin.settings.edit' : 'agent.profile.edit';
+    $settingsRoute = $isAdmin ? 'admin.settings.edit' : 'agent.edit';
     $initials = $agent
         ? strtoupper(substr($agent->f_name, 0, 1) . substr($agent->l_name, 0, 1))
         : strtoupper(substr(auth()->user()->name ?? 'A', 0, 2));
