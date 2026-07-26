@@ -58,9 +58,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/profile', [AgentController::class, 'show'])->name('agent.show');
-    Route::get('/profile/edit', [AgentController::class, 'edit'])->name('agent.edit');
-    Route::put('/profile', [AgentController::class, 'update'])->name('agent.update');
+    Route::get('/profile', [AgentController::class, 'show'])->name('agent.show')->middleware('agent');
+    Route::get('/profile/edit', [AgentController::class, 'edit'])->name('agent.edit')->middleware('agent');
+    Route::put('/profile', [AgentController::class, 'update'])->name('agent.update')->middleware('agent');
 
     Route::get('/availability', [AgentAvailabilityController::class, 'index'])->name('availability.index');
     Route::post('/availability', [AgentAvailabilityController::class, 'store'])->name('availability.store');

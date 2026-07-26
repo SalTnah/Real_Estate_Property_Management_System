@@ -5,6 +5,12 @@
     $initials = $agent
         ? strtoupper(substr($agent->f_name, 0, 1) . substr($agent->l_name, 0, 1))
         : strtoupper(substr(auth()->user()->name ?? 'A', 0, 2));
+
+    $showSearch = request()->routeIs([
+            'agent.properties.*',
+            'agent.clients.*',
+            'admin.agents.*',
+        ]) && ! request()->routeIs('agent.properties.create');
 @endphp
 
 <header class="flex h-16 shrink-0 items-center gap-4 border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8">
@@ -13,16 +19,20 @@
     </button>
 
     <div class="min-w-0 flex-1">
-        <div class="relative max-w-md">
-            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <x-agent.icon name="search" class="h-4 w-4" />
-            </span>
-            <input
-                type="text"
-                placeholder="Search properties, clients..."
-                class="w-full rounded-lg border-0 bg-gray-100 py-2 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500"
-            >
-        </div>
+        @if ($showSearch)
+            <form method="GET" action="{{ url()->current() }}" class="relative max-w-md">
+                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                    <x-agent.icon name="search" class="h-4 w-4" />
+                </span>
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ request('q') }}"
+                    placeholder="Search properties, clients..."
+                    class="w-full rounded-lg border-0 bg-gray-100 py-2 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500"
+                >
+            </form>
+        @endif
     </div>
 
     <button class="relative text-gray-400 hover:text-gray-600">

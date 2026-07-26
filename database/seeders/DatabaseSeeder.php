@@ -22,8 +22,7 @@ class DatabaseSeeder extends Seeder
 
             AppointmentSeeder::class,
             NotificationSeeder::class,
-            SearchSeeder::class,
-            SavedSearchSeeder::class,
+
         ]);
     }
 }

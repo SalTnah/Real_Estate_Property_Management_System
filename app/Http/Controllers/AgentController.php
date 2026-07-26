@@ -7,10 +7,18 @@ use Illuminate\Http\Request;
 
 class AgentController extends Controller
 {
+    public function __construct()
+    {
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            redirect()->route('admin.settings.edit')->send();
+            exit;
+        }
+    }
+
     public function show()
     {
         $user = auth()->user();
-        
+
         $agent = $user->agent ?? Agent::firstOrCreate(
             ['user_id' => $user->id],
             [
@@ -26,7 +34,7 @@ class AgentController extends Controller
     public function edit()
     {
         $user = auth()->user();
-        
+
         $agent = $user->agent ?? Agent::firstOrCreate(
             ['user_id' => $user->id],
             [
@@ -42,7 +50,7 @@ class AgentController extends Controller
     public function update(Request $request)
     {
         $user = auth()->user();
-        
+
         $agent = $user->agent ?? Agent::firstOrCreate(
             ['user_id' => $user->id],
             [

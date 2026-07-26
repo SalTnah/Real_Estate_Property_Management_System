@@ -4,7 +4,7 @@
         <p class="mt-1 text-sm text-gray-500">Update the details for {{ $property->title }}.</p>
     </div>
 
-    <form method="POST" action="{{ route('properties.update', $property) }}" enctype="multipart/form-data" class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <form method="POST" action="{{ route("{$routePrefix}.properties.update", $property) }}" enctype="multipart/form-data" class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
         @csrf
         @method('PUT')
 
@@ -18,7 +18,7 @@
             <button type="submit" class="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
                 Save Property
             </button>
-            <a href="{{ route('properties.show', $property) }}" class="block text-center text-sm font-medium text-gray-500 hover:text-gray-700">Cancel</a>
+            <a href="{{ route("{$routePrefix}.properties.show", $property) }}" class="block text-center text-sm font-medium text-gray-500 hover:text-gray-700">Cancel</a>
         </div>
     </form>
 </x-agent-layout>

@@ -90,8 +90,20 @@
         </div>
 
         <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
-            <div class="px-5 py-4">
+            <div class="flex items-center justify-between px-5 py-4">
                 <h2 class="text-base font-semibold text-gray-900">Today's Schedule</h2>
+                @if (auth()->user()->isAdmin())
+                    <form method="GET" action="{{ route('dashboard') }}">
+                        <select name="agent_id" onchange="this.form.submit()" class="rounded-lg border-gray-200 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500">
+                            <option value="">All agents</option>
+                            @foreach ($allAgents as $a)
+                                <option value="{{ $a->id }}" @selected($selectedAgentId === $a->id)>
+                                    {{ $a->f_name }} {{ $a->l_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                @endif
             </div>
             <div class="space-y-4 px-5 pb-5">
                 @forelse ($todaySchedule as $appointment)
@@ -103,6 +115,9 @@
                                 &mdash; {{ $appointment->property->title }}
                             @elseif ($appointment->client)
                                 &mdash; {{ $appointment->client->f_name }} {{ $appointment->client->l_name }}
+                            @endif
+                            @if (auth()->user()->isAdmin() && $appointment->agent)
+                                <span class="text-xs text-gray-400">({{ $appointment->agent->f_name }} {{ $appointment->agent->l_name }})</span>
                             @endif
                         </p>
                     </div>

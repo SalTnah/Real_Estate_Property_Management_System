@@ -7,24 +7,27 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Client::class);
 
-        $clients = auth()->user()->isAdmin()
-            ? Client::with('agent')->get()
-            : auth()->user()->agent->clients;
+        $query = auth()->user()->isAdmin()
+            ? Client::with('agent')
+            : auth()->user()->agent->clients();
+
+        if ($request->filled('q')) {
+            $keyword = $request->string('q');
+            $query->where(function ($q) use ($keyword) {
+                $q->where('f_name', 'like', "%{$keyword}%")
+                    ->orWhere('l_name', 'like', "%{$keyword}%")
+                    ->orWhere('email', 'like', "%{$keyword}%");
+            });
+        }
+
+        $clients = $query->get();
 
         return view('clients.index', compact('clients'));
     }
-
-    public function create()
-    {
-        $this->authorize('create', Client::class);
-
-        return view('clients.create');
-    }
-
     public function store(Request $request)
     {
         $this->authorize('create', Client::class);

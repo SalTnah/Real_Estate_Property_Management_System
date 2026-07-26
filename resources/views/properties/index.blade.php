@@ -12,11 +12,11 @@
             </p>
         </div>
         <div class="flex shrink-0 items-center gap-3">
-            <a href="{{ route('properties.filter') }}" class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+            <a href="{{ route("{$routePrefix}.properties.filter") }}" class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">
                 <x-agent.icon name="filter" class="h-4 w-4" />
                 Filter &amp; Sort
             </a>
-            <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
+            <a href="{{ route("{$routePrefix}.properties.create") }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
                 <x-agent.icon name="plus" class="h-4 w-4" />
                 Add Property
             </a>
@@ -54,7 +54,7 @@
     @if ($properties->isEmpty())
         <div class="mt-8 rounded-xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-100">
             <p class="text-sm text-gray-500">No properties match these filters.</p>
-            <a href="{{ route('properties.index') }}" class="mt-2 inline-block text-sm font-medium text-blue-600 hover:text-blue-700">Clear filters</a>
+            <a href="{{ route("{$routePrefix}.properties.index") }}" class="mt-2 inline-block text-sm font-medium text-blue-600 hover:text-blue-700">Clear filters</a>
         </div>
     @elseif ($view === 'list')
         <div class="mt-6 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
@@ -74,7 +74,7 @@
                         @foreach ($properties as $property)
                             <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                 <td class="px-5 py-3">
-                                    <a href="{{ route('properties.show', $property) }}" class="font-medium text-gray-900 hover:text-blue-600">{{ $property->title }}</a>
+                                    <a href="{{ route("{$routePrefix}.properties.show", $property) }}" class="font-medium text-gray-900 hover:text-blue-600">{{ $property->title }}</a>
                                     <p class="text-xs text-gray-400">{{ $property->street_address }}, {{ $property->city }}, {{ $property->state }}</p>
                                 </td>
                                 <td class="px-5 py-3 text-gray-700">${{ number_format($property->price) }}</td>
