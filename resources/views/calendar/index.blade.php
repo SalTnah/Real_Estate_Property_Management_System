@@ -38,8 +38,6 @@
             </div>
 
             <div class="tabs" style="display: inline-flex; background: #f3f4f6; padding: 4px; border-radius: 8px; gap: 4px;">
-                <span class="tab" style="padding: 6px 12px; font-size: 13px; font-weight: 500; color: #6b7280; cursor: not-allowed; opacity: 0.5;" title="Coming soon">Day</span>
-                <span class="tab" style="padding: 6px 12px; font-size: 13px; font-weight: 500; color: #6b7280; cursor: not-allowed; opacity: 0.5;" title="Coming soon">Week</span>
                 <span class="tab active" style="padding: 6px 12px; font-size: 13px; font-weight: 500; background: #fff; color: #111827; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">Month</span>
             </div>
         </div>
