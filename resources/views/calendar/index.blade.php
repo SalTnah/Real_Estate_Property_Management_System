@@ -15,8 +15,9 @@
             <a href="{{ route('agent.appointments.index') }}" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; color: #374151; font-weight: 500; text-decoration: none;">
                 List view
             </a>
-            <a href="{{ route('agent.appointments.create') }}" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #2563eb; color: #fff; border-radius: 6px; font-weight: 500; text-decoration: none;">
-                + Book Viewing
+            <a href="{{ route('agent.appointments.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
+                <x-agent.icon name="plus" class="h-4 w-4" />
+                Schedule Appointment
             </a>
         </div>
     </div>
