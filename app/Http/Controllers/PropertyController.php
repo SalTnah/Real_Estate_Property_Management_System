@@ -128,34 +128,23 @@ class PropertyController extends Controller
         // Store uploaded photos
         $this->storeUploadedPhotos($request, $property);
 
-        // Dispatch property_added notification to agents and admins
+        // Dispatch only ONE test notification to the first admin
         $propertyTitle = $property->title ?? 'Property #' . $property->id;
         
-        $notificationData = [
-            'type' => 'property_added',
-            'title' => 'New Property Added: ' . $propertyTitle,
-            'agent_id' => $property->agent_id,
-            'data' => [
-                'property_id' => $property->id,
-                'title' => $propertyTitle,
-                'message' => "A new property '{$propertyTitle}' has been added.",
-            ],
-        ];
+        $admin = User::where('role', 'admin')->first();
 
-        $recipients = [];
-        if ($property->agent && isset($property->agent->user_id)) {
-            $recipients[] = $property->agent->user_id;
-        }
-        $adminIds = User::where('role', 'admin')->pluck('id')->toArray();
-        $recipients = array_unique(array_merge($recipients, $adminIds));
-
-        if (!empty($recipients)) {
-            foreach ($recipients as $userId) {
-                $notificationData['user_id'] = $userId;
-                Notification::create($notificationData);
-            }
-        } else {
-            Notification::create($notificationData);
+        if ($admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'type' => 'property_added',
+                'title' => 'New Property Added: ' . $propertyTitle,
+                'agent_id' => $property->agent_id,
+                'data' => [
+                    'property_id' => $property->id,
+                    'title' => $propertyTitle,
+                    'message' => "A new property '{$propertyTitle}' has been added.",
+                ],
+            ]);
         }
 
         return redirect()

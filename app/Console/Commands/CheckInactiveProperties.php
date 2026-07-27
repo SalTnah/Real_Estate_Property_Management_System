@@ -15,15 +15,15 @@ class CheckInactiveProperties extends Command
 
     public function handle()
     {
-        $inactivityDays = 30;
-        $thresholdDate = Carbon::now()->subDays($inactivityDays);
+        $inactivityDays = 30; // 1 for testing
+        $thresholdDate = Carbon::now()->subDays($inactivityDays); // addSecond() for testing
 
         $inactiveProperties = Property::where('last_activity_at', '<', $thresholdDate)
             ->orWhereNull('last_activity_at')
             ->get();
 
         $recentNotifications = Notification::where('type', 'property_inactive')
-            ->where('created_at', '>', $thresholdDate)
+            ->where('created_at', '>', $thresholdDate)  //Carbon::now()->subSeconds(5) for testing 
             ->get();
 
         $count = 0;
@@ -38,10 +38,9 @@ class CheckInactiveProperties extends Command
                 $propertyTitle = $property->title ?? 'Property #' . $property->id;
                 $messageText = "Property has been inactive for over {$inactivityDays} days.";
 
-                // Include direct table columns required by the database schema
                 $notificationData = [
                     'type' => 'property_inactive',
-                    'title' => 'Property Inactive: ' . $propertyTitle, // Direct column required by table schema
+                    'title' => 'Property Inactive: ' . $propertyTitle,
                     'agent_id' => $property->agent_id, 
                     'data' => [
                         'property_id' => $property->id,
