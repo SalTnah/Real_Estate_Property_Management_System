@@ -9,22 +9,22 @@ class ClientPolicy
 {
     public function viewAny(User $user)
     {
-        return $user->isAdmin() || $user->agent !== null;
+        return $user->agent !== null;
     }
 
     public function view(User $user, Client $client)
     {
-        return $user->isAdmin() || $user->agent?->id === $client->agent_id;
+        return $user->agent?->id === $client->agent_id;
     }
 
     public function create(User $user)
     {
-        return $user->agent !== null; // admins don't create clients, only agents
+        return $user->agent !== null;
     }
 
     public function update(User $user, Client $client)
     {
-        return $user->agent?->id === $client->agent_id; // admin excluded — read-only per current scope
+        return $user->agent?->id === $client->agent_id;
     }
 
     public function delete(User $user, Client $client)

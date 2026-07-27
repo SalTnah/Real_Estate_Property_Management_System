@@ -2,7 +2,23 @@
     $property = $property ?? null;
 @endphp
 
-<p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Basics</p>
+@if (isset($agents))
+    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Listing Agent</p>
+    <div class="mt-3">
+        <x-input-label for="agent_id" value="Agent" />
+        <select id="agent_id" name="agent_id" class="block w-full rounded-lg border-gray-300 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            <option value="">Select an agent</option>
+            @foreach ($agents as $a)
+                <option value="{{ $a->id }}" @selected(old('agent_id', $property?->agent_id) == $a->id)>
+                    {{ $a->f_name }} {{ $a->l_name }}{{ $a->agency_name ? ' — '.$a->agency_name : '' }}
+                </option>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('agent_id')" />
+    </div>
+@endif
+
+<p class="mt-6 text-xs font-semibold uppercase tracking-wide text-gray-400">Basics</p>
 <div class="mt-3">
     <x-input-label for="title" value="Property title" />
     <x-text-input id="title" name="title" type="text" required :value="old('title', $property?->title)" />
@@ -88,7 +104,7 @@
     </div>
     <div>
         <x-input-label for="year_built" value="Year built" />
-        <x-text-input id="year_built" name="year_built" type="number" :value="old('year_built', $property?->year_built)" />
+        <x-text-input id="year_built" name="year_built" type="number" min="1901" max="{{ now()->year + 1 }}" placeholder="e.g. 2024" :value="old('year_built', $property?->year_built)" />
         <x-input-error :messages="$errors->get('year_built')" />
     </div>
 </div>

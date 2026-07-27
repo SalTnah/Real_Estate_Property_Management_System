@@ -52,7 +52,7 @@
 
         <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">People</p>
         <ul class="space-y-1">
-            @php($item = $navItem('Clients', 'agent.clients.index', 'users'))
+            @php($item = $navItem('Clients', $isAdmin ? 'admin.clients.index' : 'agent.clients.index', 'users', $isAdmin ? ['admin.clients.*'] : ['agent.clients.*']))
             <li>
                 <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
                     <x-agent.icon :name="$item['icon']" class="h-5 w-5 shrink-0" />

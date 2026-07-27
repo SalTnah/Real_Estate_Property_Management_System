@@ -19,6 +19,19 @@
                     @endif
                 </div>
             @endif
+
+            <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+                <a href="{{ route('admin.clients.edit', $client) }}" class="block w-full rounded-lg border border-gray-200 px-4 py-2.5 text-center text-sm font-semibold text-gray-700 hover:bg-gray-50">
+                    Edit Client
+                </a>
+                <form method="POST" action="{{ route('admin.clients.destroy', $client) }}" class="mt-2" onsubmit="return confirm('Delete this client? This cannot be undone.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="block w-full rounded-lg border border-red-200 px-4 py-2.5 text-center text-sm font-semibold text-red-600 hover:bg-red-50">
+                        Delete Client
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </x-agent-layout>
