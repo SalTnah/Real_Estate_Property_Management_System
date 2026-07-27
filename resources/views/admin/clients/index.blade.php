@@ -6,9 +6,14 @@
 @endphp
 
 <x-agent-layout :title="'Clients'">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-900">Clients</h1>
-        <p class="mt-1 text-sm text-gray-500">All clients across every agent.</p>
+    <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Clients</h1>
+            <p class="mt-1 text-sm text-gray-500">All clients across every agent.</p>
+        </div>
+        <a href="{{ route('admin.clients.create') }}" class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+            Add Client
+        </a>
     </div>
 
     <div class="mt-6 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-100">

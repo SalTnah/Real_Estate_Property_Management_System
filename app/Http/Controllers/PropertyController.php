@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Property;
+use App\Models\Agent;
 use App\Models\Notification;
-use App\Models\User;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -97,11 +97,17 @@ class PropertyController extends Controller
 
     public function create(Request $request)
     {
-        return view('properties.create', [
+        $data = [
             'types' => self::TYPES,
             'statuses' => self::STATUSES,
             'routePrefix' => $this->routePrefix($request),
-        ]);
+        ];
+
+        if ($this->isAdmin(auth()->user())) {
+            $data['agents'] = Agent::orderBy('f_name')->orderBy('l_name')->get();
+        }
+
+        return view('properties.create', $data);
     }
 
     public function filter(Request $request)
@@ -117,8 +123,15 @@ class PropertyController extends Controller
     {
         $validated = $this->validated($request);
 
-        $agent = auth()->user()->agent;
-        abort_unless($agent, 403, 'Only agents can create properties.');
+        $user = auth()->user();
+
+        if ($this->isAdmin($user)) {
+            $request->validate(['agent_id' => 'required|exists:agents,id']);
+            $agent = Agent::findOrFail($request->agent_id);
+        } else {
+            $agent = $user->agent;
+            abort_unless($agent, 403, 'Only agents can create properties.');
+        }
 
         // Set initial last activity timestamp
         $validated['last_activity_at'] = now();
@@ -170,12 +183,18 @@ class PropertyController extends Controller
 
         $property->load(['photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')]);
 
-        return view('properties.edit', [
+        $data = [
             'property' => $property,
             'types' => self::TYPES,
             'statuses' => self::STATUSES,
             'routePrefix' => $this->routePrefix($request),
-        ]);
+        ];
+
+        if ($this->isAdmin(auth()->user())) {
+            $data['agents'] = Agent::orderBy('f_name')->orderBy('l_name')->get();
+        }
+
+        return view('properties.edit', $data);
     }
 
     public function update(Request $request, Property $property)
@@ -183,6 +202,11 @@ class PropertyController extends Controller
         $this->authorizeOwner($property);
 
         $validated = $this->validated($request);
+
+        if ($this->isAdmin(auth()->user())) {
+            $request->validate(['agent_id' => 'required|exists:agents,id']);
+            $validated['agent_id'] = $request->agent_id;
+        }
 
         // Refresh last activity timestamp on update
         $validated['last_activity_at'] = now();
@@ -351,7 +375,7 @@ class PropertyController extends Controller
             'lot_acre' => 'nullable|numeric|min:0',
             'bedrooms' => 'nullable|integer|min:0',
             'bathrooms' => 'nullable|numeric|min:0',
-            'year_built' => 'nullable|digits:4',
+            'year_built' => 'nullable|digits:4|integer|min:1901|max:'.(now()->year + 1),
         ]);
     }
 

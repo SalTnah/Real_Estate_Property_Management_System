@@ -89,15 +89,6 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
-    Route::get('/search', [SearchController::class, 'index'])->name('search.index');
-    Route::post('/search', [SearchController::class, 'store'])->name('search.store');
-    Route::delete('/search/{search}', [SearchController::class, 'destroy'])->name('search.destroy');
-
-    Route::get('/saved-searches', [SavedSearchController::class, 'index'])->name('saved-searches.index');
-    Route::post('/saved-searches', [SavedSearchController::class, 'store'])->name('saved-searches.store');
-    Route::put('/saved-searches/{savedSearch}', [SavedSearchController::class, 'update'])->name('saved-searches.update');
-    Route::delete('/saved-searches/{savedSearch}', [SavedSearchController::class, 'destroy'])->name('saved-searches.destroy');
-
 });
 
 /*
@@ -108,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('agents', AdminAgentController::class);
-    Route::resource('clients', AdminClientController::class)->only(['index', 'show']);
+    Route::resource('clients', AdminClientController::class);
     Route::resource('properties', PropertyController::class);
 
     // Add these lines for the Settings page

@@ -2,6 +2,21 @@
     $client = $client ?? null;
 @endphp
 
+@if (isset($agents))
+    <div class="mb-4">
+        <x-input-label for="agent_id" value="Assigned Agent" />
+        <select id="agent_id" name="agent_id" class="block w-full rounded-lg border-gray-300 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            <option value="">Select an agent</option>
+            @foreach ($agents as $a)
+                <option value="{{ $a->id }}" @selected(old('agent_id', $client?->agent_id) == $a->id)>
+                    {{ $a->f_name }} {{ $a->l_name }}{{ $a->agency_name ? ' — '.$a->agency_name : '' }}
+                </option>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('agent_id')" />
+    </div>
+@endif
+
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
         <x-input-label for="f_name" value="First name" />
