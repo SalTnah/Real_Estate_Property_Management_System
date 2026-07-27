@@ -7,7 +7,7 @@
 
 <x-agent-layout :title="$property->title">
     <nav class="text-sm text-gray-500">
-        <a href="{{ route('properties.index') }}" class="text-blue-600 hover:text-blue-700">Properties</a>
+        <a href="{{ route("{$routePrefix}.properties.index") }}" class="text-blue-600 hover:text-blue-700">Properties</a>
         <span class="mx-1">/</span>
         <span class="text-gray-700">{{ $property->title }}</span>
     </nav>
@@ -35,7 +35,7 @@
                         </div>
                     @endforeach
 
-                    <a href="{{ route('properties.photos.index', $property) }}" class="flex aspect-[4/3] items-center justify-center rounded-lg bg-slate-900 text-sm font-semibold text-white hover:bg-slate-800">
+                    <a href="{{ route("{$routePrefix}.properties.photos.index", $property) }}" class="flex aspect-[4/3] items-center justify-center rounded-lg bg-slate-900 text-sm font-semibold text-white hover:bg-slate-800">
                         @if ($remaining > 0)
                             +{{ $remaining }} photos
                         @else
@@ -44,7 +44,7 @@
                     </a>
                 </div>
             @else
-                <a href="{{ route('properties.photos.index', $property) }}" class="inline-block text-sm font-medium text-blue-600 hover:text-blue-700">
+                <a href="{{ route("{$routePrefix}.properties.photos.index", $property) }}" class="inline-block text-sm font-medium text-blue-600 hover:text-blue-700">
                     + Add more photos
                 </a>
             @endif
@@ -67,11 +67,11 @@
                     <span class="inline-flex cursor-not-allowed items-center justify-center rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-400" title="Coming soon — Appointments module">
                         Book Viewing
                     </span>
-                    <a href="{{ route('properties.edit', $property) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+                    <a href="{{ route("{$routePrefix}.properties.edit", $property) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">
                         Edit
                     </a>
                 </div>
-                <form method="POST" action="{{ route('properties.destroy', $property) }}" class="mt-2" onsubmit="return confirm('Delete this property? This cannot be undone.');">
+                <form method="POST" action="{{ route("{$routePrefix}.properties.destroy", $property) }}" class="mt-2" onsubmit="return confirm('Delete this property? This cannot be undone.');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="w-full rounded-lg border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50">
@@ -87,7 +87,7 @@
                         <button @click="open = !open" @click.outside="open = false" class="text-sm font-medium text-blue-600 hover:text-blue-700">Change status</button>
                         <div x-show="open" x-cloak x-transition class="absolute right-0 z-20 mt-2 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
                             @foreach (\App\Http\Controllers\PropertyController::STATUSES as $status)
-                                <form method="POST" action="{{ route('properties.status', $property) }}">
+                                <form method="POST" action="{{ route("{$routePrefix}.properties.status", $property) }}">
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="status" value="{{ $status }}">

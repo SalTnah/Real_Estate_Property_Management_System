@@ -74,36 +74,23 @@
             </ul>
         @endif
 
-        <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Discover</p>
-        <ul class="space-y-1">
-            @foreach ([
-                $navItem('Search', 'search.index', 'search'),
-                $navItem('Saved Searches', 'saved-searches.index', 'bookmark'),
-            ] as $item)
-                <li>
-                    <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
-                        <x-agent.icon :name="$item['icon']" class="h-5 w-5 shrink-0" />
-                        {{ $item['label'] }}
-                    </a>
-                </li>
-            @endforeach
-        </ul>
-
-        <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Scheduling</p>
-        <ul class="space-y-1">
-            @foreach ([
-                $navItem('Calendar', 'agent.appointments.calendar', 'calendar'),
-                $navItem('Appointments', 'agent.appointments.index', 'clock'),
-                ...(! $isAdmin ? [$navItem('Availability', 'availability.index', 'check-square')] : []),
-            ] as $item)
-                <li>
-                    <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
-                        <x-agent.icon :name="$item['icon']" class="h-5 w-5 shrink-0" />
-                        {{ $item['label'] }}
-                    </a>
-                </li>
-            @endforeach
-        </ul>
+        @unless ($isAdmin)
+            <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Scheduling</p>
+            <ul class="space-y-1">
+                @foreach ([
+                    $navItem('Calendar', 'agent.appointments.calendar', 'calendar'),
+                    $navItem('Appointments', 'agent.appointments.index', 'clock'),
+                    $navItem('Availability', 'availability.index', 'check-square'),
+                ] as $item)
+                    <li>
+                        <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
+                            <x-agent.icon :name="$item['icon']" class="h-5 w-5 shrink-0" />
+                            {{ $item['label'] }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        @endunless
 
         <p class="mt-5 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Account</p>
         <ul class="space-y-1">
@@ -121,13 +108,13 @@
                     @endif
                 </a>
             </li>
-            @php($item = $navItem('Settings', 'agent.edit', 'settings'))
-            <li>
-                <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
-                    <x-agent.icon :name="$item['icon']" class="h-5 w-5 shrink-0" />
-                    {{ $item['label'] }}
-                </a>
-            </li>
+            @php($item = $navItem('Settings', $isAdmin ? 'admin.settings.edit' : 'agent.edit', 'settings', $isAdmin ? ['admin.settings.*'] : ['agent.edit', 'agent.show']))
+                <li>
+                    <a href="{{ $item['href'] }}" class="{{ $item['isActive'] ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition">
+                        <x-agent.icon :name="$item['icon']" class="h-5 w-5 shrink-0" />
+                        {{ $item['label'] }}
+                    </a>
+                </li>
         </ul>
     </nav>
 

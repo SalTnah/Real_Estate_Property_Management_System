@@ -12,6 +12,12 @@ class PropertyController extends Controller
 {
     use HandlesPropertyValidation;
 
+    /**
+     * Prefix used to build route names for shared views
+     * (e.g. properties.index, properties.filter, properties.create).
+     */
+    private string $routePrefix = 'agent';
+
     public function index(Request $request)
     {
         $agent = auth()->user()->agent;
@@ -77,14 +83,20 @@ class PropertyController extends Controller
 
         $properties = $query->paginate(9)->withQueryString();
 
-        return view('agent.properties.index', compact('properties', 'counts', 'view'));
+        return view('properties.index', [
+            'properties' => $properties,
+            'counts' => $counts,
+            'view' => $view,
+            'routePrefix' => $this->routePrefix,
+        ]);
     }
 
     public function create()
     {
-        return view('agent.properties.create', [
+        return view('properties.create', [
             'types' => self::TYPES,
             'statuses' => self::STATUSES,
+            'routePrefix' => $this->routePrefix,
         ]);
     }
 
@@ -93,7 +105,7 @@ class PropertyController extends Controller
         return view('properties.filter', [
             'types' => self::TYPES,
             'statuses' => ['Available', 'Pending', 'Sold'],
-            'routePrefix' => 'agent',
+            'routePrefix' => $this->routePrefix,
         ]);
     }
 
@@ -195,7 +207,7 @@ class PropertyController extends Controller
 
         $property->load(['photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')]);
 
-        return view('properties.photos', ['property' => $property, 'routePrefix' => 'agent']);
+        return view('properties.photos', ['property' => $property, 'routePrefix' => $this->routePrefix]);
     }
 
     public function storePhotos(Request $request, Property $property)

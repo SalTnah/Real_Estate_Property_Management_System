@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PropertyController extends Controller
 {
@@ -84,14 +87,20 @@ class PropertyController extends Controller
 
         $properties = $query->paginate(9)->withQueryString();
 
-        return view('properties.index', compact('properties', 'counts', 'view'));
+        return view('properties.index', [
+            'properties' => $properties,
+            'counts' => $counts,
+            'view' => $view,
+            'routePrefix' => $this->routePrefix($request),
+        ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         return view('properties.create', [
             'types' => self::TYPES,
             'statuses' => self::STATUSES,
+            'routePrefix' => $this->routePrefix($request),
         ]);
     }
 
@@ -100,6 +109,7 @@ class PropertyController extends Controller
         return view('properties.filter', [
             'types' => self::TYPES,
             'statuses' => ['Available', 'Pending', 'Sold'],
+            'routePrefix' => $this->routePrefix($request),
         ]);
     }
 
@@ -110,25 +120,63 @@ class PropertyController extends Controller
         $agent = auth()->user()->agent;
         abort_unless($agent, 403, 'Only agents can create properties.');
 
+        // Set initial last activity timestamp
+        $validated['last_activity_at'] = now();
+
         $property = $agent->properties()->create($validated);
 
         // geocode address -> lat/lng here if using a geocoding service
 
         $this->storeUploadedPhotos($request, $property);
 
-        return redirect()->route('properties.show', $property)->with('success', 'Property added.');
+        // Dispatch property_added notification to agents and admins
+        $propertyTitle = $property->title ?? 'Property #' . $property->id;
+        
+        $notificationData = [
+            'type' => 'property_added',
+            'title' => 'New Property Added: ' . $propertyTitle,
+            'agent_id' => $property->agent_id,
+            'data' => [
+                'property_id' => $property->id,
+                'title' => $propertyTitle,
+                'message' => "A new property '{$propertyTitle}' has been added.",
+            ],
+        ];
+
+        $recipients = [];
+        if ($property->agent && isset($property->agent->user_id)) {
+            $recipients[] = $property->agent->user_id;
+        }
+        $adminIds = User::where('role', 'admin')->pluck('id')->toArray();
+        $recipients = array_unique(array_merge($recipients, $adminIds));
+
+        if (!empty($recipients)) {
+            foreach ($recipients as $userId) {
+                $notificationData['user_id'] = $userId;
+                Notification::create($notificationData);
+            }
+        } else {
+            Notification::create($notificationData);
+        }
+
+        return redirect()
+            ->route("{$this->routePrefix($request)}.properties.show", $property)
+            ->with('success', 'Property added.');
     }
 
-    public function show(Property $property)
+    public function show(Request $request, Property $property)
     {
         $this->authorizeOwner($property);
 
         $property->load(['photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order'), 'agent']);
 
-        return view('properties.show', compact('property'));
+        return view('properties.show', [
+            'property' => $property,
+            'routePrefix' => $this->routePrefix($request),
+        ]);
     }
 
-    public function edit(Property $property)
+    public function edit(Request $request, Property $property)
     {
         $this->authorizeOwner($property);
 
@@ -138,6 +186,7 @@ class PropertyController extends Controller
             'property' => $property,
             'types' => self::TYPES,
             'statuses' => self::STATUSES,
+            'routePrefix' => $this->routePrefix($request),
         ]);
     }
 
@@ -147,14 +196,19 @@ class PropertyController extends Controller
 
         $validated = $this->validated($request);
 
+        // Refresh last activity timestamp on update
+        $validated['last_activity_at'] = now();
+
         $property->update($validated);
 
         $this->storeUploadedPhotos($request, $property);
 
-        return redirect()->route('properties.show', $property)->with('success', 'Property updated.');
+        return redirect()
+            ->route("{$this->routePrefix($request)}.properties.show", $property)
+            ->with('success', 'Property updated.');
     }
 
-    public function destroy(Property $property)
+    public function destroy(Request $request, Property $property)
     {
         $this->authorizeOwner($property);
 
@@ -164,7 +218,9 @@ class PropertyController extends Controller
 
         $property->delete();
 
-        return redirect()->route('properties.index')->with('success', 'Property removed.');
+        return redirect()
+            ->route("{$this->routePrefix($request)}.properties.index")
+            ->with('success', 'Property removed.');
     }
 
     public function toggleFavorite(Property $property)
@@ -195,13 +251,16 @@ class PropertyController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function photosIndex(Property $property)
+    public function photosIndex(Request $request, Property $property)
     {
         $this->authorizeOwner($property);
 
         $property->load(['photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')]);
 
-        return view('properties.photos', compact('property'));
+        return view('properties.photos', [
+            'property' => $property,
+            'routePrefix' => $this->routePrefix($request),
+        ]);
     }
 
     public function storePhotos(Request $request, Property $property)
@@ -269,6 +328,18 @@ class PropertyController extends Controller
     | Helpers
     |--------------------------------------------------------------------------
     */
+
+    /**
+     * Derive the route-name prefix ("agent" or "admin") from the
+     * currently matched route, so shared views/redirects can build
+     * the correct route name regardless of which group handled them.
+     */
+    private function routePrefix(Request $request): string
+    {
+        $name = $request->route()?->getName() ?? '';
+
+        return Str::before($name, '.properties');
+    }
 
     /**
      * Normalize $user->role to a plain string, whether it's a backed enum

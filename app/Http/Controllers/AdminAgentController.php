@@ -8,9 +8,22 @@ use Illuminate\Http\Request;
 
 class AdminAgentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $agents = Agent::with('user')->withCount('clients')->get();
+        $query = Agent::with('user')->withCount('clients');
+
+        if ($request->filled('q')) {
+            $keyword = $request->string('q');
+            $query->where(function ($q) use ($keyword) {
+                $q->where('f_name', 'like', "%{$keyword}%")
+                    ->orWhere('l_name', 'like', "%{$keyword}%")
+                    ->orWhere('email', 'like', "%{$keyword}%")
+                    ->orWhere('agency_name', 'like', "%{$keyword}%");
+            });
+        }
+
+        $agents = $query->get();
+
         return view('admin.agents.index', compact('agents'));
     }
 

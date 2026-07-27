@@ -13,7 +13,7 @@ class Property extends Model
         'agent_id', 'title', 'description', 'property_type', 'status',
         'street_address', 'city', 'state', 'zip', 'latitude', 'longitude',
         'price', 'size_sqft', 'lot_acre', 'bedrooms', 'bathrooms',
-        'year_built', 'is_favorited',
+        'year_built', 'is_favorited', 'last_activity_at',
     ];
 
     protected $casts = [
@@ -21,6 +21,7 @@ class Property extends Model
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
         'price' => 'decimal:2',
+        'last_activity_at' => 'datetime',
     ];
 
     public function agent()
