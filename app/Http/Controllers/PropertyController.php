@@ -216,6 +216,32 @@ class PropertyController extends Controller
     {
         $this->authorizeOwner($property);
 
+        $actor = auth()->user();
+        $actorLabel = $this->isAdmin($actor)
+            ? "Admin ({$actor->name})"
+            : ($actor->agent ? "{$actor->agent->f_name} {$actor->agent->l_name}" : $actor->name);
+        $propertyTitle = $property->title ?: ('Property #'.$property->id);
+
+        // Notify the listing agent, unless they're the one deleting it
+        if ($property->agent_id && (! $actor->agent || $actor->agent->id !== $property->agent_id)) {
+            Notification::create([
+                'agent_id' => $property->agent_id,
+                'type' => 'property',
+                'title' => 'Property deleted',
+                'body' => "'{$propertyTitle}' was deleted by {$actorLabel}.",
+                'link' => null,
+            ]);
+        }
+
+        // Notify all admins
+        Notification::create([
+            'agent_id' => null,
+            'type' => 'property',
+            'title' => 'Property deleted',
+            'body' => "'{$propertyTitle}' was deleted by {$actorLabel}.",
+            'link' => null,
+        ]);
+
         foreach ($property->photos as $photo) {
             Storage::disk('public')->delete($photo->photo_url);
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Agent;
 use App\Models\Client;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class AdminClientController extends Controller
@@ -94,6 +95,29 @@ class AdminClientController extends Controller
 
     public function destroy(Client $client)
     {
+        $actor = auth()->user();
+        $clientName = "{$client->f_name} {$client->l_name}";
+
+        // Notify the owning agent that an admin removed their client
+        if ($client->agent_id) {
+            Notification::create([
+                'agent_id' => $client->agent_id,
+                'type' => 'client',
+                'title' => 'Client deleted',
+                'body' => "{$clientName} was deleted by Admin ({$actor->name}).",
+                'link' => null,
+            ]);
+        }
+
+        // Notify other admins too
+        Notification::create([
+            'agent_id' => null,
+            'type' => 'client',
+            'title' => 'Client deleted',
+            'body' => "{$clientName} was deleted by Admin ({$actor->name}).",
+            'link' => null,
+        ]);
+
         $client->delete();
 
         return redirect()->route('admin.clients.index')->with('success', 'Client removed.');

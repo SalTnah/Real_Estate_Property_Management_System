@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -97,6 +98,19 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         $this->authorize('delete', $client);
+
+        $actor = auth()->user();
+        $actorLabel = $actor->agent ? "{$actor->agent->f_name} {$actor->agent->l_name}" : $actor->name;
+        $clientName = "{$client->f_name} {$client->l_name}";
+
+        // Notify all admins
+        Notification::create([
+            'agent_id' => null,
+            'type' => 'client',
+            'title' => 'Client deleted',
+            'body' => "{$clientName} was deleted by {$actorLabel}.",
+            'link' => null,
+        ]);
 
         $client->delete();
 

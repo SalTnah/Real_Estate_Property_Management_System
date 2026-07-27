@@ -45,6 +45,19 @@ class NotificationController extends Controller
         return redirect()->back();
     }
 
+    public function clearRead()
+    {
+        $user = auth()->user();
+
+        if ($user->agent) {
+            $user->agent->notifications()->whereNotNull('read_at')->delete();
+        } else {
+            Notification::forAdmins()->whereNotNull('read_at')->delete();
+        }
+
+        return redirect()->back()->with('success', 'Read notifications cleared.');
+    }
+
     public function destroy(Notification $notification)
     {
         $user = auth()->user();

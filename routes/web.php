@@ -7,8 +7,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\SavedSearchController;
 use App\Http\Controllers\AdminAgentController;
 use App\Http\Controllers\AdminClientController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -86,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+    Route::delete('/notifications/clear-read', [NotificationController::class, 'clearRead'])->name('notifications.clear-read');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
