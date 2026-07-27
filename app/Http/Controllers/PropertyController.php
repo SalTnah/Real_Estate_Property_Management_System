@@ -125,8 +125,7 @@ class PropertyController extends Controller
 
         $property = $agent->properties()->create($validated);
 
-        // geocode address -> lat/lng here if using a geocoding service
-
+        // Store uploaded photos
         $this->storeUploadedPhotos($request, $property);
 
         // Dispatch property_added notification to agents and admins
@@ -245,12 +244,6 @@ class PropertyController extends Controller
         return back()->with('success', 'Status updated.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Photo management
-    |--------------------------------------------------------------------------
-    */
-
     public function photosIndex(Request $request, Property $property)
     {
         $this->authorizeOwner($property);
@@ -323,17 +316,6 @@ class PropertyController extends Controller
         return back()->with('success', 'Photo removed.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * Derive the route-name prefix ("agent" or "admin") from the
-     * currently matched route, so shared views/redirects can build
-     * the correct route name regardless of which group handled them.
-     */
     private function routePrefix(Request $request): string
     {
         $name = $request->route()?->getName() ?? '';
@@ -341,10 +323,6 @@ class PropertyController extends Controller
         return Str::before($name, '.properties');
     }
 
-    /**
-     * Normalize $user->role to a plain string, whether it's a backed enum
-     * (e.g. UserRole::Admin with value 'admin') or a plain string column.
-     */
     private function roleValue($user): ?string
     {
         $role = $user->role;
@@ -362,7 +340,7 @@ class PropertyController extends Controller
         $user = auth()->user();
 
         if ($this->isAdmin($user)) {
-            return; // admins can view/manage any property
+            return;
         }
 
         abort_unless($user->agent && $property->agent_id === $user->agent->id, 403);
