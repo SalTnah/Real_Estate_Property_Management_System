@@ -16,7 +16,7 @@
                 <x-agent.icon name="filter" class="h-4 w-4" />
                 Filter &amp; Sort
             </a>
-            <a href="{{ route("{$routePrefix}.properties.create") }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
+            <a href="{{ route("{$routePrefix}.properties.create") }}" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
                 <x-agent.icon name="plus" class="h-4 w-4" />
                 Add Property
             </a>

@@ -12,11 +12,7 @@ class AppointmentSeeder extends Seeder
 {
     public function run(): void
     {
-        $agent = Agent::first();
-        $clients = Client::all();
-        $properties = Property::all();
-
-        $appointments = [
+        $templates = [
             ['title' => 'Initial buyer consultation', 'appt_type' => 'Meeting', 'start_time' => now()->subDays(7)->setTime(10, 0), 'end_time' => now()->subDays(7)->setTime(11, 0), 'status' => 'Completed', 'outcome' => 'Showed', 'notes' => 'Discussed budget and must-haves.'],
             ['title' => 'Property viewing - downtown condo', 'appt_type' => 'Viewing', 'start_time' => now()->subDays(5)->setTime(14, 0), 'end_time' => now()->subDays(5)->setTime(15, 0), 'status' => 'Completed', 'outcome' => 'Not Interested', 'notes' => 'Client felt it was too small.'],
             ['title' => 'Follow-up phone call', 'appt_type' => 'Call', 'start_time' => now()->subDays(3)->setTime(9, 30), 'end_time' => now()->subDays(3)->setTime(9, 45), 'status' => 'Completed', 'outcome' => 'Showed', 'notes' => 'Reviewed new listings.'],
@@ -29,12 +25,32 @@ class AppointmentSeeder extends Seeder
             ['title' => 'Missed viewing appointment', 'appt_type' => 'Viewing', 'start_time' => now()->subDays(10)->setTime(15, 0), 'end_time' => now()->subDays(10)->setTime(16, 0), 'status' => 'No-show', 'outcome' => 'No-show', 'notes' => 'Client never confirmed.'],
         ];
 
-        foreach ($appointments as $i => $data) {
-            Appointment::create(array_merge($data, [
-                'agent_id' => $agent->id,
-                'client_id' => $clients->get($i % max($clients->count(), 1))?->id,
-                'property_id' => $properties->get($i % max($properties->count(), 1))?->id,
-            ]));
-        }
+        // Build appointments per-agent so client_id/property_id always
+        // belong to the same agent as the appointment itself.
+        Agent::all()->each(function (Agent $agent) use ($templates) {
+            $clients = Client::where('agent_id', $agent->id)->get();
+            $properties = Property::where('agent_id', $agent->id)->get();
+
+            if ($clients->isEmpty() && $properties->isEmpty()) {
+                return;
+            }
+
+            foreach ($templates as $i => $data) {
+                // 'Personal' appointments have no client/property on purpose.
+                $client = $data['appt_type'] === 'Personal' || $clients->isEmpty()
+                    ? null
+                    : $clients->get($i % $clients->count());
+
+                $property = in_array($data['appt_type'], ['Viewing', 'Listing'], true) && $properties->isNotEmpty()
+                    ? $properties->get($i % $properties->count())
+                    : null;
+
+                Appointment::create(array_merge($data, [
+                    'agent_id' => $agent->id,
+                    'client_id' => $client?->id,
+                    'property_id' => $property?->id,
+                ]));
+            }
+        });
     }
 }

@@ -10,7 +10,7 @@ class AgentAvailabilitySeeder extends Seeder
 {
     public function run(): void
     {
-        $agent = Agent::first();
+        $agents = Agent::all();
 
         $slots = [
             ['days_of_week' => 'Monday', 'start_time' => '09:00', 'end_time' => '12:00'],
@@ -25,8 +25,10 @@ class AgentAvailabilitySeeder extends Seeder
             ['days_of_week' => 'Sunday', 'start_time' => '11:00', 'end_time' => '15:00'],
         ];
 
-        foreach ($slots as $slot) {
-            AgentAvailability::create(array_merge($slot, ['agent_id' => $agent->id]));
-        }
+        $agents->each(function (Agent $agent) use ($slots) {
+            foreach ($slots as $slot) {
+                AgentAvailability::create(array_merge($slot, ['agent_id' => $agent->id]));
+            }
+        });
     }
 }

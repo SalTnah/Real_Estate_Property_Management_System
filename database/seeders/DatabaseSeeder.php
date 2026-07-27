@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             AppointmentSeeder::class,
             NotificationSeeder::class,
 
+            DanaAlvarezContentSeeder::class,
         ]);
     }
 }

@@ -10,7 +10,7 @@ class ClientSeeder extends Seeder
 {
     public function run(): void
     {
-        $agent = Agent::first();
+        $agents = Agent::orderBy('id')->get();
 
         $clients = [
             ['f_name' => 'Marcus', 'l_name' => 'Reed', 'email' => 'marcus.reed@example.com', 'phone' => '555-0101', 'location' => 'Austin, TX', 'type' => 'Buyer', 'lead_source' => 'Website', 'lead_status' => 'New', 'notes' => 'Looking for a 3-bed near downtown.', 'client_since' => now()->subDays(2)],
@@ -25,7 +25,13 @@ class ClientSeeder extends Seeder
             ['f_name' => 'Yuki', 'l_name' => 'Tanaka', 'email' => 'yuki.tanaka@example.com', 'phone' => '555-0110', 'location' => 'Austin, TX', 'type' => 'Seller', 'lead_source' => 'Referral', 'lead_status' => 'Qualified', 'notes' => 'Downsizing after kids moved out.', 'client_since' => now()->subDays(20)],
         ];
 
-        foreach ($clients as $data) {
+        if ($agents->isEmpty()) {
+            return;
+        }
+
+        foreach ($clients as $i => $data) {
+            $agent = $agents[$i % $agents->count()];
+
             Client::firstOrCreate(
                 ['email' => $data['email']],
                 array_merge($data, ['agent_id' => $agent->id])

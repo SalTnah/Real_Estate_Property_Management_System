@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Agent;
 use App\Models\Client;
 use App\Models\Notification;
+use App\Traits\HandlesClientPreferences;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminClientController extends Controller
 {
+    use HandlesClientPreferences;
+
     public function index(Request $request)
     {
         $query = Client::with('agent');
@@ -50,10 +54,28 @@ class AdminClientController extends Controller
             'client_since' => 'nullable|date',
         ]);
 
+        $preferenceData = $this->validatedPreferenceData($request);
+
         $agent = Agent::findOrFail($validated['agent_id']);
         unset($validated['agent_id']);
 
-        $client = $agent->clients()->create($validated);
+        $client = DB::transaction(function () use ($agent, $validated, $preferenceData) {
+            $client = $agent->clients()->create($validated);
+
+            if ($preferenceData) {
+                $client->preference()->create($preferenceData);
+            }
+
+            return $client;
+        });
+
+        Notification::create([
+            'agent_id' => $agent->id,
+            'type' => 'client',
+            'title' => 'New client assigned',
+            'body' => "{$client->f_name} {$client->l_name} was assigned to you by Admin (".auth()->user()->name.').',
+            'link' => route('agent.clients.show', $client),
+        ]);
 
         return redirect()->route('admin.clients.show', $client)->with('success', 'Client added.');
     }
@@ -68,6 +90,8 @@ class AdminClientController extends Controller
     public function edit(Client $client)
     {
         $agents = Agent::orderBy('f_name')->orderBy('l_name')->get();
+
+        $client->load('preference');
 
         return view('admin.clients.edit', compact('client', 'agents'));
     }
@@ -88,7 +112,15 @@ class AdminClientController extends Controller
             'client_since' => 'nullable|date',
         ]);
 
-        $client->update($validated);
+        $preferenceData = $this->validatedPreferenceData($request);
+
+        DB::transaction(function () use ($validated, $preferenceData, $client) {
+            $client->update($validated);
+
+            if ($preferenceData) {
+                $client->preference()->updateOrCreate(['client_id' => $client->id], $preferenceData);
+            }
+        });
 
         return redirect()->route('admin.clients.show', $client)->with('success', 'Client updated.');
     }

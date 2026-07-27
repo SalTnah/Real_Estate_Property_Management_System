@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Notification;
+use App\Traits\HandlesClientPreferences;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
+    use HandlesClientPreferences;
+
     public function index(Request $request)
     {
         $this->authorize('viewAny', Client::class);
@@ -39,20 +43,18 @@ class ClientController extends Controller
     {
         $this->authorize('create', Client::class);
 
-        $validated = $request->validate([
-            'f_name' => 'required|string|max:191',
-            'l_name' => 'required|string|max:191',
-            'email' => 'nullable|email|max:191',
-            'phone' => 'nullable|string|max:191',
-            'location' => 'nullable|string|max:191',
-            'type' => 'required|in:Buyer,Seller,Both,Renter',
-            'lead_source' => 'nullable|string|max:191',
-            'lead_status' => 'required|in:New,Contacted,Qualified,Nurturing,Client,Closed,Lost',
-            'notes' => 'nullable|string',
-            'client_since' => 'nullable|date',
-        ]);
+        $validated = $request->validate($this->clientRules());
+        $preferenceData = $this->validatedPreferenceData($request);
 
-        $client = auth()->user()->agent->clients()->create($validated);
+        $client = DB::transaction(function () use ($validated, $preferenceData) {
+            $client = auth()->user()->agent->clients()->create($validated);
+
+            if ($preferenceData) {
+                $client->preference()->create($preferenceData);
+            }
+
+            return $client;
+        });
 
         return redirect()->route('agent.clients.show', $client)->with('success', 'Client added.');
     }
@@ -70,6 +72,8 @@ class ClientController extends Controller
     {
         $this->authorize('update', $client);
 
+        $client->load('preference');
+
         return view('clients.edit', compact('client'));
     }
 
@@ -77,20 +81,16 @@ class ClientController extends Controller
     {
         $this->authorize('update', $client);
 
-        $validated = $request->validate([
-            'f_name' => 'required|string|max:191',
-            'l_name' => 'required|string|max:191',
-            'email' => 'nullable|email|max:191',
-            'phone' => 'nullable|string|max:191',
-            'location' => 'nullable|string|max:191',
-            'type' => 'required|in:Buyer,Seller,Both,Renter',
-            'lead_source' => 'nullable|string|max:191',
-            'lead_status' => 'required|in:New,Contacted,Qualified,Nurturing,Client,Closed,Lost',
-            'notes' => 'nullable|string',
-            'client_since' => 'nullable|date',
-        ]);
+        $validated = $request->validate($this->clientRules());
+        $preferenceData = $this->validatedPreferenceData($request);
 
-        $client->update($validated);
+        DB::transaction(function () use ($validated, $preferenceData, $client) {
+            $client->update($validated);
+
+            if ($preferenceData) {
+                $client->preference()->updateOrCreate(['client_id' => $client->id], $preferenceData);
+            }
+        });
 
         return redirect()->route('agent.clients.show', $client)->with('success', 'Client updated.');
     }
@@ -115,5 +115,21 @@ class ClientController extends Controller
         $client->delete();
 
         return redirect()->route('agent.clients.index');
+    }
+
+    protected function clientRules(): array
+    {
+        return [
+            'f_name' => 'required|string|max:191',
+            'l_name' => 'required|string|max:191',
+            'email' => 'nullable|email|max:191',
+            'phone' => 'nullable|string|max:191',
+            'location' => 'nullable|string|max:191',
+            'type' => 'required|in:Buyer,Seller,Both,Renter',
+            'lead_source' => 'nullable|string|max:191',
+            'lead_status' => 'required|in:New,Contacted,Qualified,Nurturing,Client,Closed,Lost',
+            'notes' => 'nullable|string',
+            'client_since' => 'nullable|date',
+        ];
     }
 }

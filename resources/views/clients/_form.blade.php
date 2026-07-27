@@ -86,3 +86,72 @@
     <textarea id="notes" name="notes" rows="4" class="block w-full rounded-lg border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('notes', $client?->notes) }}</textarea>
     <x-input-error :messages="$errors->get('notes')" />
 </div>
+
+<div class="mt-8">
+    <h3 class="text-base font-semibold text-gray-900 mb-4">Client Preferences</h3>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+            <x-input-label for="budget_min" value="Budget min" />
+            <x-text-input id="budget_min" name="budget_min" type="number" step="0.01" min="0"
+                :value="old('budget_min', $client?->preference?->budget_min)" />
+            <x-input-error :messages="$errors->get('budget_min')" />
+        </div>
+
+        <div>
+            <x-input-label for="budget_max" value="Budget max" />
+            <x-text-input id="budget_max" name="budget_max" type="number" step="0.01" min="0"
+                :value="old('budget_max', $client?->preference?->budget_max)" />
+            <x-input-error :messages="$errors->get('budget_max')" />
+        </div>
+
+        <div>
+            <x-input-label for="pref_property_type" value="Preferred property type" />
+            <select id="pref_property_type" name="pref_property_type" class="block w-full rounded-lg border-gray-300 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="">Select a type</option>
+                @foreach (['Single Family', 'Condo', 'Townhouse', 'Multi-Family', 'Land', 'Commercial'] as $option)
+                    <option value="{{ $option }}" @selected(old('pref_property_type', $client?->preference?->pref_property_type) === $option)>{{ $option }}</option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('pref_property_type')" />
+        </div>
+
+        <div>
+            <x-input-label for="pref_areas" value="Preferred areas" />
+            <x-text-input id="pref_areas" name="pref_areas" type="text"
+                :value="old('pref_areas', $client?->preference?->pref_areas ? implode(', ', $client->preference->pref_areas) : null)"
+                placeholder="Downtown, Westside, Lakefront..." />
+            <p class="mt-1 text-xs text-gray-500">Separate multiple areas with commas.</p>
+            <x-input-error :messages="$errors->get('pref_areas')" />
+        </div>
+
+        <div>
+            <x-input-label for="pref_bedrooms" value="Preferred bedrooms" />
+            <x-text-input id="pref_bedrooms" name="pref_bedrooms" type="number" min="0"
+                :value="old('pref_bedrooms', $client?->preference?->pref_bedrooms)" />
+            <x-input-error :messages="$errors->get('pref_bedrooms')" />
+        </div>
+
+        <div>
+            <x-input-label for="pref_bathrooms" value="Preferred bathrooms" />
+            <x-text-input id="pref_bathrooms" name="pref_bathrooms" type="number" min="0" step="0.5"
+                :value="old('pref_bathrooms', $client?->preference?->pref_bathrooms)" />
+            <x-input-error :messages="$errors->get('pref_bathrooms')" />
+        </div>
+
+        <div class="sm:col-span-2">
+            <x-input-label for="must_haves" value="Must-haves" />
+            <x-text-input id="must_haves" name="must_haves" type="text"
+                :value="old('must_haves', $client?->preference?->must_haves ? implode(', ', $client->preference->must_haves) : null)"
+                placeholder="Garage, Pool, Home office..." />
+            <p class="mt-1 text-xs text-gray-500">Separate multiple items with commas.</p>
+            <x-input-error :messages="$errors->get('must_haves')" />
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <x-input-label for="additional_notes" value="Additional preference notes" />
+        <textarea id="additional_notes" name="additional_notes" rows="4" class="block w-full rounded-lg border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('additional_notes', $client?->preference?->additional_notes) }}</textarea>
+        <x-input-error :messages="$errors->get('additional_notes')" />
+    </div>
+</div>
