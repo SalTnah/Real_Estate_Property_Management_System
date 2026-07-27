@@ -18,7 +18,7 @@
         <div class="mt-4 grid grid-cols-3 gap-2">
             @foreach ($property->photos->take(6) as $photo)
                 <div class="aspect-square overflow-hidden rounded-lg bg-gray-100">
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($photo->photo_url) }}" class="h-full w-full object-cover">
+                    <img src="{{ $photo->url }}" class="h-full w-full object-cover">
                 </div>
             @endforeach
         </div>

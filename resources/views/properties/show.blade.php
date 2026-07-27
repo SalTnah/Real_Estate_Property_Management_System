@@ -16,7 +16,7 @@
         <div class="space-y-4 lg:col-span-2">
             <div class="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-gray-100">
                 @if ($cover)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($cover->photo_url) }}" alt="{{ $property->title }}" class="h-full w-full object-cover">
+                    <img src="{{ $cover->url }}" alt="{{ $property->title }}" class="h-full w-full object-cover">
                 @else
                     <div class="flex h-full w-full items-center justify-center text-gray-300">
                         <x-agent.icon name="building" class="h-14 w-14" />
@@ -31,7 +31,7 @@
                 <div class="grid grid-cols-4 gap-3">
                     @foreach ($thumbnails as $thumb)
                         <div class="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($thumb->photo_url) }}" class="h-full w-full object-cover">
+                            <img src="{{ $thumb->url }}" class="h-full w-full object-cover">
                         </div>
                     @endforeach
 
