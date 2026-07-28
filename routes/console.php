@@ -8,5 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('properties:check-inactive')->daily();
-//Note: everySecond(), everyMinute() for testing purposes
+Schedule::command('properties:check-inactive')->everySecond();
+//Note: everySecond(), everyMinute(), daily() for testing purposes

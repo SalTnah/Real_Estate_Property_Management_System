@@ -141,16 +141,24 @@ class PropertyController extends Controller
         // Store uploaded photos
         $this->storeUploadedPhotos($request, $property);
 
-        // Notify the listing agent (skip if the admin created it for themselves as an agent, unlikely) and all admins
-        $propertyTitle = $property->title ?: ('Property #'.$property->id);
+        // Dispatch only ONE test notification to the first admin
+        $propertyTitle = $property->title ?? 'Property #' . $property->id;
+        
+        $admin = User::where('role', 'admin')->first();
 
-        Notification::create([
-            'agent_id' => $agent->id,
-            'type' => 'property_added',
-            'title' => 'New property added',
-            'body' => "'{$propertyTitle}' has been added to your listings.",
-            'link' => route('agent.properties.show', $property),
-        ]);
+        if ($admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'type' => 'property_added',
+                'title' => 'New Property Added: ' . $propertyTitle,
+                'agent_id' => $property->agent_id,
+                'data' => [
+                    'property_id' => $property->id,
+                    'title' => $propertyTitle,
+                    'message' => "A new property '{$propertyTitle}' has been added.",
+                ],
+            ]);
+        }
 
         return redirect()
             ->route("{$this->routePrefix($request)}.properties.show", $property)
