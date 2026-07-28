@@ -4,6 +4,7 @@
         <p class="mt-1 text-sm text-gray-500">Book a viewing, meeting, or call.</p>
     </div>
 
+
     <form method="POST" action="{{ route('agent.appointments.store') }}" class="mt-6 max-w-3xl rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
         @csrf
         @include('appointments._form')
