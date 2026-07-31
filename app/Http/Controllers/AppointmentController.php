@@ -34,7 +34,7 @@ class AppointmentController extends Controller
         return view('appointments.create');
     }
 
-    public function store(Request $request)
+public function store(Request $request)
     {
         $this->authorize('create', Appointment::class);
 
@@ -59,7 +59,7 @@ class AppointmentController extends Controller
                         ? Carbon::parse($request->input('end_time'))
                         : $start;
 
-                    $dayName = $start->format('l'); // "Monday", "Tuesday", etc.
+                    $dayName = $start->format('l');
 
                     $withinAvailability = AgentAvailability::where('agent_id', $agentId)
                         ->where('days_of_week', $dayName)
@@ -73,6 +73,18 @@ class AppointmentController extends Controller
 
                     if (!$withinAvailability) {
                         $fail('Time slot picked is outside the agent\'s available hours.');
+                        return;
+                    }
+
+                    $conflictingAppointment = Appointment::where('agent_id', $agentId)
+                        ->where('status', '!=', 'Cancelled')
+                        ->get()
+                        ->contains(function ($appt) use ($start, $end) {
+                            return $start->lt($appt->end_time) && $end->gt($appt->start_time);
+                        });
+
+                    if ($conflictingAppointment) {
+                        $fail('This time conflicts with another appointment already scheduled.');
                     }
                 },
             ],
@@ -83,7 +95,7 @@ class AppointmentController extends Controller
 
         $validated = $request->validate($rules);
 
-        $validated['agent_id'] = $agentId; // attach it before saving
+        $validated['agent_id'] = $agentId;
 
         Appointment::create($validated);
 
@@ -105,25 +117,67 @@ class AppointmentController extends Controller
     }
 
     public function update(Request $request, Appointment $appointment)
-    {
-        $this->authorize('update', $appointment);
+        {
+            $this->authorize('update', $appointment);
 
-        $validated = $request->validate([
-            'property_id' => 'nullable|exists:properties,id',
-            'client_id' => 'nullable|exists:clients,id',
-            'title' => 'required|string|max:255',
-            'appt_type' => 'required|in:Viewing,Meeting,Call,Listing,Personal',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-            'status' => 'nullable|in:Scheduled,Completed,Cancelled,No-show',
-            'outcome' => 'nullable|in:Showed,No-show,Offer Made,Not Interested,Rescheduled',
-            'notes' => 'nullable|string',
-        ]);
+            $agentId = $appointment->agent_id;
 
-        $appointment->update($validated);
+            $validated = $request->validate([
+                'property_id' => 'nullable|exists:properties,id',
+                'client_id' => 'nullable|exists:clients,id',
+                'title' => 'required|string|max:255',
+                'appt_type' => 'required|in:Viewing,Meeting,Call,Listing,Personal',
+                'start_time' => [
+                    'required',
+                    'date',
+                    function ($attribute, $value, $fail) use ($request, $agentId, $appointment) {
+                        if (!$agentId) return;
 
-        return redirect()->route('agent.appointments.show', $appointment)->with('success', 'Appointment updated.');
-    }
+                        $start = Carbon::parse($value);
+                        $end = $request->input('end_time')
+                            ? Carbon::parse($request->input('end_time'))
+                            : $start;
+
+                        $dayName = $start->format('l');
+
+                        $withinAvailability = AgentAvailability::where('agent_id', $agentId)
+                            ->where('days_of_week', $dayName)
+                            ->get()
+                            ->contains(function ($slot) use ($start, $end) {
+                                $slotStart = Carbon::parse($start->format('Y-m-d') . ' ' . $slot->start_time->format('H:i'));
+                                $slotEnd   = Carbon::parse($start->format('Y-m-d') . ' ' . $slot->end_time->format('H:i'));
+
+                                return $start->gte($slotStart) && $end->lte($slotEnd);
+                            });
+
+                        if (!$withinAvailability) {
+                            $fail('Time slot picked is outside the agent\'s available hours.');
+                            return;
+                        }
+
+                        $conflictingAppointment = Appointment::where('agent_id', $agentId)
+                            ->where('id', '!=', $appointment->id)
+                            ->where('status', '!=', 'Cancelled')
+                            ->get()
+                            ->contains(function ($appt) use ($start, $end) {
+                                return $start->lt($appt->end_time) && $end->gt($appt->start_time);
+                            });
+
+                        if ($conflictingAppointment) {
+                            $fail('This time conflicts with another appointment already scheduled.');
+                        }
+                    },
+                ],
+                'end_time' => 'required|date|after:start_time',
+                'status' => 'nullable|in:Scheduled,Completed,Cancelled,No-show',
+                'outcome' => 'nullable|in:Showed,No-show,Offer Made,Not Interested,Rescheduled',
+                'notes' => 'nullable|string',
+            ]);
+
+            $appointment->update($validated);
+
+            return redirect()->route('agent.appointments.show', $appointment)->with('success', 'Appointment updated.');
+        }
 
     public function destroy(Appointment $appointment)
     {

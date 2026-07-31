@@ -94,12 +94,12 @@
 <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
     <div>
         <x-input-label for="bedrooms" value="Bedrooms" />
-        <x-text-input id="bedrooms" name="bedrooms" type="number" :value="old('bedrooms', $property?->bedrooms)" />
+        <x-text-input id="bedrooms" name="bedrooms" type="number" min="0" max="50" :value="old('bedrooms', $property?->bedrooms)" />
         <x-input-error :messages="$errors->get('bedrooms')" />
     </div>
     <div>
         <x-input-label for="bathrooms" value="Bathrooms" />
-        <x-text-input id="bathrooms" name="bathrooms" type="number" step="0.5" :value="old('bathrooms', $property?->bathrooms)" />
+        <x-text-input id="bathrooms" name="bathrooms" type="number" step="0.5" min="0" max="50" :value="old('bathrooms', $property?->bathrooms)" />
         <x-input-error :messages="$errors->get('bathrooms')" />
     </div>
     <div>

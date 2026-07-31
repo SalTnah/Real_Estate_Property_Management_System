@@ -11,9 +11,9 @@ trait HandlesClientPreferences
         return [
             'budget_min' => 'nullable|numeric|min:0',
             'budget_max' => 'nullable|numeric|min:0|gte:budget_min',
-            'pref_property_type' => 'nullable|string|max:191',
-            'pref_bedrooms' => 'nullable|integer|min:0',
-            'pref_bathrooms' => 'nullable|numeric|min:0',
+            'pref_property_type' => 'nullable|in:Single Family,Condo,Townhouse,Multi-Family,Land,Commercial',
+            'pref_bedrooms' => 'nullable|integer|min:0|max:20',
+            'pref_bathrooms' => 'nullable|integer|min:0|max:20',
             'pref_areas' => 'nullable|string',
             'must_haves' => 'nullable|string',
             'additional_notes' => 'nullable|string',

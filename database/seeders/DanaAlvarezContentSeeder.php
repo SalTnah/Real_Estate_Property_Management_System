@@ -30,39 +30,39 @@ class DanaAlvarezContentSeeder extends Seeder
     }
 
     protected function seedClients(Agent $dana)
-    {
-        $clientData = [
-            ['f_name' => 'Grace', 'l_name' => 'Kowalski', 'email' => 'grace.kowalski@example.com', 'phone' => '555-0201', 'location' => 'Austin, TX', 'type' => 'Buyer', 'lead_source' => 'Referral', 'lead_status' => 'Qualified', 'notes' => 'Pre-approved, wants to move fast.', 'client_since' => now()->subDays(8), 'preference' => ['budget_min' => 320000, 'budget_max' => 460000, 'pref_property_type' => 'House', 'pref_bedrooms' => 3, 'pref_bathrooms' => 2, 'pref_areas' => ['South Austin', 'Zilker'], 'must_haves' => ['Fenced yard', 'Updated HVAC'], 'additional_notes' => 'Has a dog, needs outdoor space.']],
-            ['f_name' => 'Anthony', 'l_name' => 'Delgado', 'email' => 'anthony.delgado@example.com', 'phone' => '555-0202', 'location' => 'Austin, TX', 'type' => 'Seller', 'lead_source' => 'Website', 'lead_status' => 'Contacted', 'notes' => 'Relocating out of state, motivated seller.', 'client_since' => now()->subDays(4), 'preference' => null],
-            ['f_name' => 'Naomi', 'l_name' => 'Chu', 'email' => 'naomi.chu@example.com', 'phone' => '555-0203', 'location' => 'Cedar Park, TX', 'type' => 'Buyer', 'lead_source' => 'Zillow', 'lead_status' => 'Nurturing', 'notes' => 'Still saving for a bigger down payment.', 'client_since' => now()->subDays(25), 'preference' => ['budget_min' => 275000, 'budget_max' => 380000, 'pref_property_type' => 'Condo', 'pref_bedrooms' => 2, 'pref_bathrooms' => 2, 'pref_areas' => ['Cedar Park'], 'must_haves' => ['Elevator', 'Assigned parking'], 'additional_notes' => 'Works downtown, wants an easy commute.']],
-            ['f_name' => 'Felix', 'l_name' => 'Novak', 'email' => 'felix.novak@example.com', 'phone' => '555-0204', 'location' => 'Austin, TX', 'type' => 'Both', 'lead_source' => 'Open House', 'lead_status' => 'Client', 'notes' => 'Selling starter home to buy something bigger.', 'client_since' => now()->subDays(90), 'preference' => ['budget_min' => 500000, 'budget_max' => 650000, 'pref_property_type' => 'House', 'pref_bedrooms' => 4, 'pref_bathrooms' => 3, 'pref_areas' => ['Barton Hills', 'Travis Heights'], 'must_haves' => ['Home office', 'Two-car garage'], 'additional_notes' => 'Needs to close on the sale before buying.']],
-            ['f_name' => 'Rosalind', 'l_name' => 'Ahmadi', 'email' => 'rosalind.ahmadi@example.com', 'phone' => '555-0205', 'location' => 'Round Rock, TX', 'type' => 'Renter', 'lead_source' => 'Instagram', 'lead_status' => 'New', 'notes' => 'Short-term rental while house hunting.', 'client_since' => now()->subDays(1), 'preference' => null],
-        ];
+        {
+            $clientData = [
+                ['f_name' => 'Grace', 'l_name' => 'Kowalski', 'email' => 'grace.kowalski@example.com', 'phone' => '555-0201', 'location' => 'Austin, TX', 'type' => 'Buyer', 'lead_source' => 'Referral', 'lead_status' => 'Qualified', 'notes' => 'Pre-approved, wants to move fast.', 'client_since' => now()->subDays(8), 'preference' => ['budget_min' => 320000, 'budget_max' => 460000, 'pref_property_type' => 'Single Family', 'pref_bedrooms' => 3, 'pref_bathrooms' => 2, 'pref_areas' => ['South Austin', 'Zilker'], 'must_haves' => ['Fenced yard', 'Updated HVAC'], 'additional_notes' => 'Has a dog, needs outdoor space.']],
+                ['f_name' => 'Anthony', 'l_name' => 'Delgado', 'email' => 'anthony.delgado@example.com', 'phone' => '555-0202', 'location' => 'Austin, TX', 'type' => 'Seller', 'lead_source' => 'Website', 'lead_status' => 'Contacted', 'notes' => 'Relocating out of state, motivated seller.', 'client_since' => now()->subDays(4), 'preference' => null],
+                ['f_name' => 'Naomi', 'l_name' => 'Chu', 'email' => 'naomi.chu@example.com', 'phone' => '555-0203', 'location' => 'Cedar Park, TX', 'type' => 'Buyer', 'lead_source' => 'Zillow', 'lead_status' => 'Nurturing', 'notes' => 'Still saving for a bigger down payment.', 'client_since' => now()->subDays(25), 'preference' => ['budget_min' => 275000, 'budget_max' => 380000, 'pref_property_type' => 'Condo', 'pref_bedrooms' => 2, 'pref_bathrooms' => 2, 'pref_areas' => ['Cedar Park'], 'must_haves' => ['Elevator', 'Assigned parking'], 'additional_notes' => 'Works downtown, wants an easy commute.']],
+                ['f_name' => 'Felix', 'l_name' => 'Novak', 'email' => 'felix.novak@example.com', 'phone' => '555-0204', 'location' => 'Austin, TX', 'type' => 'Both', 'lead_source' => 'Open House', 'lead_status' => 'Client', 'notes' => 'Selling starter home to buy something bigger.', 'client_since' => now()->subDays(90), 'preference' => ['budget_min' => 500000, 'budget_max' => 650000, 'pref_property_type' => 'Single Family', 'pref_bedrooms' => 4, 'pref_bathrooms' => 3, 'pref_areas' => ['Barton Hills', 'Travis Heights'], 'must_haves' => ['Home office', 'Two-car garage'], 'additional_notes' => 'Needs to close on the sale before buying.']],
+                ['f_name' => 'Rosalind', 'l_name' => 'Ahmadi', 'email' => 'rosalind.ahmadi@example.com', 'phone' => '555-0205', 'location' => 'Round Rock, TX', 'type' => 'Renter', 'lead_source' => 'Instagram', 'lead_status' => 'New', 'notes' => 'Short-term rental while house hunting.', 'client_since' => now()->subDays(1), 'preference' => null],
+            ];
 
-        return collect($clientData)->map(function ($data) use ($dana) {
-            $preference = $data['preference'] ?? null;
-            unset($data['preference']);
+            return collect($clientData)->map(function ($data) use ($dana) {
+                $preference = $data['preference'] ?? null;
+                unset($data['preference']);
 
-            $client = Client::firstOrCreate(
-                ['email' => $data['email']],
-                array_merge($data, ['agent_id' => $dana->id])
-            );
+                $client = Client::firstOrCreate(
+                    ['email' => $data['email']],
+                    array_merge($data, ['agent_id' => $dana->id])
+                );
 
-            if ($preference && ! $client->preference()->exists()) {
-                ClientPreference::create(array_merge($preference, ['client_id' => $client->id]));
-            }
+                if ($preference && ! $client->preference()->exists()) {
+                    ClientPreference::create(array_merge($preference, ['client_id' => $client->id]));
+                }
 
-            return $client;
-        });
-    }
+                return $client;
+            });
+        }
 
     protected function seedProperties(Agent $dana)
     {
         $propertyData = [
-            ['title' => 'Zilker Bungalow', 'property_type' => 'House', 'status' => 'Available', 'street_address' => '1108 Bluebonnet Ln', 'city' => 'Austin', 'state' => 'TX', 'zip' => '78704', 'price' => 549000, 'size_sqft' => 1850, 'bedrooms' => 3, 'bathrooms' => 2, 'year_built' => 1998],
-            ['title' => 'Barton Hills Modern', 'property_type' => 'House', 'status' => 'Available', 'street_address' => '2244 Rabb Rd', 'city' => 'Austin', 'state' => 'TX', 'zip' => '78704', 'price' => 675000, 'size_sqft' => 2400, 'bedrooms' => 4, 'bathrooms' => 3, 'year_built' => 2015],
+            ['title' => 'Zilker Bungalow', 'property_type' => 'Single Family', 'status' => 'Available', 'street_address' => '1108 Bluebonnet Ln', 'city' => 'Austin', 'state' => 'TX', 'zip' => '78704', 'price' => 549000, 'size_sqft' => 1850, 'bedrooms' => 3, 'bathrooms' => 2, 'year_built' => 1998],
+            ['title' => 'Barton Hills Modern', 'property_type' => 'Single Family', 'status' => 'Available', 'street_address' => '2244 Rabb Rd', 'city' => 'Austin', 'state' => 'TX', 'zip' => '78704', 'price' => 675000, 'size_sqft' => 2400, 'bedrooms' => 4, 'bathrooms' => 3, 'year_built' => 2015],
             ['title' => 'Cedar Park Courtyard Condo', 'property_type' => 'Condo', 'status' => 'Pending', 'street_address' => '900 Whitestone Blvd', 'city' => 'Cedar Park', 'state' => 'TX', 'zip' => '78613', 'price' => 335000, 'size_sqft' => 1120, 'bedrooms' => 2, 'bathrooms' => 2, 'year_built' => 2009],
-            ['title' => 'Travis Heights Craftsman', 'property_type' => 'House', 'status' => 'Available', 'street_address' => '1802 Newning Ave', 'city' => 'Austin', 'state' => 'TX', 'zip' => '78704', 'price' => 620000, 'size_sqft' => 2100, 'bedrooms' => 4, 'bathrooms' => 3, 'year_built' => 1962],
+            ['title' => 'Travis Heights Craftsman', 'property_type' => 'Single Family', 'status' => 'Available', 'street_address' => '1802 Newning Ave', 'city' => 'Austin', 'state' => 'TX', 'zip' => '78704', 'price' => 620000, 'size_sqft' => 2100, 'bedrooms' => 4, 'bathrooms' => 3, 'year_built' => 1962],
             ['title' => 'Downtown Loft', 'property_type' => 'Condo', 'status' => 'Sold', 'street_address' => '210 Lavaca St', 'city' => 'Austin', 'state' => 'TX', 'zip' => '78701', 'price' => 410000, 'size_sqft' => 980, 'bedrooms' => 1, 'bathrooms' => 1, 'year_built' => 2012],
         ];
 
